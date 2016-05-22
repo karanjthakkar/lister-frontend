@@ -37,6 +37,29 @@ const Handlers = {
         params
       };
     }
+  },
+  'doAction': {
+    init(params) {
+      return {
+        'type': 'DO_ACTION_INIT',
+        params
+      };
+    },
+
+    success(data, params) {
+      return {
+        'type': 'DO_ACTION_SUCCESS',
+        data,
+        params
+      };
+    },
+
+    error(params) {
+      return {
+        'type': 'DO_ACTION_ERROR',
+        params
+      };
+    }
   }
 };
 
@@ -55,6 +78,29 @@ const Actions = {
           console.log(error);
           const onComplete = function onComplete() {
             dispatch(Handlers.fetchStatusForList.error(params));
+          };
+
+          if (error && error.response && error.response.json) {
+            error.response.json().then(onComplete);
+          } else {
+            onComplete();
+          }
+        });
+    };
+  },
+  doAction(params) {
+    return (dispatch) => {
+      dispatch(Handlers.doAction.init(params));
+      return api.doAction(params)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then((json) => {
+          dispatch(Handlers.doAction.success(json, params));
+        })
+        .catch((error) => {
+          console.log(error);
+          const onComplete = function onComplete() {
+            dispatch(Handlers.doAction.error(params));
           };
 
           if (error && error.response && error.response.json) {

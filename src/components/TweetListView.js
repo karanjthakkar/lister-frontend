@@ -46,9 +46,21 @@ const TweetListView = React.createClass({
     });
   },
 
+  userAction(action, tweetId) {
+    this.props.actions.doAction({
+      type: action,
+      userId: '3303637404',
+      tweetId
+    });
+  },
+
   renderTweetItem(tweet) {
     return (
-      <TweetItem tweet={tweet} mediaWidth={this.state.mediaWidth}/>
+      <TweetItem
+        tweet={tweet}
+        mediaWidth={this.state.mediaWidth}
+        userAction={this.userAction}
+      />
     );
   },
 

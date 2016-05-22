@@ -4,7 +4,8 @@ import {
   Text,
   View,
   StyleSheet,
-  Image
+  Image,
+  TouchableHighlight
 } from 'react-native';
 import { 
   timeAgo, 
@@ -12,7 +13,19 @@ import {
 } from '../utils/core';
 import HTMLView from 'react-native-htmlview';
 
+import retweetIcon from '../images/retweet.png';
+import retweetDoneIcon from '../images/retweet_hover.png';
+import LikeIcon from '../images/like.png';
+import LikeDoneIcon from '../images/like_hover.png';
+
 const TweetItem = React.createClass({
+  getInitialState() {
+    return {
+      'hasRetweeted': false,
+      'hasLiked': false
+    };
+  },
+
   getTweetText(tweet) {
     const text = tweet.get('tweet_text');
     const urlEntities = tweet.get('tweet_url_entities').toJSON();
@@ -20,8 +33,35 @@ const TweetItem = React.createClass({
     return autoLink(text, urlEntities, mediaEntities);
   },
 
+  doRetweetAction() {
+    const tweet = this.props.tweet;
+    this.setState({
+      'hasRetweeted': !this.state.hasRetweeted
+    }, () => {
+      if (this.state.hasRetweeted) {
+        this.props.userAction('retweet', tweet.get('tweet_id'));
+      }
+    });
+  },
+
+  doLikeAction() {
+    const tweet = this.props.tweet;
+    this.setState({
+      'hasLiked': !this.state.hasLiked
+    }, () => {
+      if (this.state.hasLiked) {
+        this.props.userAction('favorite', tweet.get('tweet_id'));
+      }
+    });
+  },
+
+
   render() {
     const tweet = this.props.tweet;
+    const iconRetweet = this.state.hasRetweeted ? retweetDoneIcon : retweetIcon;
+    const iconLike = this.state.hasLiked ? LikeDoneIcon : LikeIcon;
+    const actionRetweet = this.state.hasRetweeted ? styles.retweetDoneAction : styles.retweetAction;
+    const actionLike = this.state.hasLiked ? styles.likeDoneAction : styles.likeAction;
     return (
       <View style={styles.tweetItem}>
         <View style={styles.leftSection}>
@@ -64,8 +104,36 @@ const TweetItem = React.createClass({
             } 
           })()}
           <View style={styles.actions}>
-            <Text style={styles.retweet}>{tweet.get('retweet_count')}</Text>
-            <Text style={styles.favorite}>{tweet.get('favorite_count')}</Text>
+            <TouchableHighlight
+              activeOpacity={1}
+              underlayColor={'transparent'}
+              onPress={this.doRetweetAction}
+            >
+              <View style={styles.actionContainer}>
+                <Image
+                  style={styles.retweetIcon}
+                  source={iconRetweet}
+                />
+                <Text style={actionRetweet}>
+                  {tweet.get('retweet_count')}
+                </Text>
+              </View>
+            </TouchableHighlight>
+            <TouchableHighlight
+              activeOpacity={1}
+              underlayColor={'transparent'}
+              onPress={this.doLikeAction}
+            >
+              <View style={styles.actionContainer}>
+                <Image
+                  style={styles.likeIcon}
+                  source={iconLike}
+                />
+                <Text style={actionLike}>
+                  {tweet.get('favorite_count')}
+                </Text>
+              </View>
+            </TouchableHighlight>
           </View>
         </View>
       </View>
@@ -128,17 +196,51 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    paddingTop: 5
+    paddingTop: 10
   },
-  retweet: {
+  actionContainer: {
+    flexDirection: 'row',
+    width: 50
+  },
+  action: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 12
+    fontSize: 12,
+    lineHeight: 15
   },
-  favorite: {
+  retweetDoneAction: {
+    marginRight: 10,
+    color: '#19CF86',
+    fontSize: 12,
+    lineHeight: 15
+  },
+  retweetAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 12
+    fontSize: 12,
+    lineHeight: 15
+  },
+  likeDoneAction: {
+    marginRight: 10,
+    color: '#E81C4F',
+    fontSize: 12,
+    lineHeight: 15
+  },
+  likeAction: {
+    marginRight: 10,
+    color: '#8899a6',
+    fontSize: 12,
+    lineHeight: 15
+  },
+  retweetIcon: {
+    height: 18,
+    width: 18.75,
+    marginRight: 3
+  },
+  likeIcon: {
+    height: 18,
+    width: 13.5,
+    marginRight: 3
   },
   imageContainer: {
     alignItems: 'center',
