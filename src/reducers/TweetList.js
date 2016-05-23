@@ -9,6 +9,14 @@ const initialState = fromJS({
       'isFetchingError': false,
       'isNextPageFetching': false,
       'isNextPageFetchingError': false
+    },
+    '199725232': {
+      'records': [],
+      'nextPageId': null,
+      'isFetching': true,
+      'isFetchingError': false,
+      'isNextPageFetching': false,
+      'isNextPageFetchingError': false
     }
   }
 });

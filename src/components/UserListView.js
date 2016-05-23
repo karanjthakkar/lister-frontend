@@ -1,16 +1,16 @@
 import React from 'react';
 import {
   ListView,
-  Dimensions,
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  TouchableHighlight
 } from 'react-native';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import actions from '../actions';
-import TweetItem from './TweetItem';
+import ListItem from './ListItem';
 
 const ds = new ListView.DataSource({
   rowHasChanged(r1, r2) {
@@ -18,18 +18,16 @@ const ds = new ListView.DataSource({
   }
 });
 
-const TweetListView = React.createClass({
+const UserListView = React.createClass({
   getInitialState() {
     return {
-      'mediaWidth': Dimensions.get('window').width - 64,
       'isLoading': true
     };
   },
 
   componentWillMount() {
-    const listId = this.props.data.get('list_id');
-    this.props.actions.fetchStatusForList({
-      listId
+    this.props.actions.fetchUserLists({
+      'userId': this.props.userId
     });
     this.setupListData(this.props);  
   },
@@ -39,29 +37,25 @@ const TweetListView = React.createClass({
   },
 
   setupListData(props) {
-    const listId = this.props.data.get('list_id');
-    const data = props.TweetList.getIn(['data', listId, 'records']);
-    const isLoading = props.TweetList.getIn(['data', listId, 'isFetching']);
+    const data = props.UserList.get('records');
+    const isLoading = props.UserList.get('isFetching');
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
       isLoading
     });
   },
 
-  userAction(action, tweetId) {
-    this.props.actions.doAction({
-      type: action,
-      userId: '3303637404',
-      tweetId
+  openListView(listItem) {
+    this.props.navigator.push({
+      'name': 'TweetListView',
+      listItem
     });
   },
 
-  renderTweetItem(tweet) {
+  renderListItem(listItem) {
     return (
-      <TweetItem
-        tweet={tweet}
-        mediaWidth={this.state.mediaWidth}
-        userAction={this.userAction}
+      <ListItem data={listItem} 
+        openListView={this.openListView}
       />
     );
   },
@@ -74,7 +68,7 @@ const TweetListView = React.createClass({
         <View style={styles.listView}>
           <ListView
             dataSource={this.state.data}
-            renderRow={this.renderTweetItem}
+            renderRow={this.renderListItem}
           />
         </View>
       );
@@ -92,7 +86,7 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
-    'TweetList': state.TweetList
+    'UserList': state.UserList
   };
 }
 
@@ -102,4 +96,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TweetListView);
+export default connect(mapStateToProps, mapDispatchToProps)(UserListView);

@@ -5,19 +5,49 @@ export const timeAgo = (time) => {
   return moment(time, 'ddd MMM DD HH:mm:ss ZZ GGGG').fromNow(true);
 };
 
+function findEntityForUrl(url, urlEntities) {
+  let entity = {};
+  urlEntities.forEach((innerEntity) => {
+    if (innerEntity.url === url) {
+      entity = innerEntity;
+    }
+  });
+  return entity.display_url;
+}
+
+function buildTextForEntity(type, text, replaceText, originalText) {
+  let urlMarkup = '';
+  if (type === 'url') {
+    urlMarkup = `<a href="${originalText}" rel="nofollow">${replaceText}</a>`;
+    return text.replace(originalText, urlMarkup);
+  } else if (type === 'hashtag') {
+    urlMarkup = `<a href="https://twitter.com/${replaceText}" rel="nofollow">#${replaceText}</a>`;
+    return text.replace(`#${replaceText}`, urlMarkup);
+  } else if (type === 'screenName') {
+    urlMarkup = `<a href="https://twitter.com/${replaceText}" rel="nofollow">@${replaceText}</a>`;
+    return text.replace(`@${replaceText}`, urlMarkup);
+  }
+  return text;
+}
+
 export const autoLink = (text, urlEntities, mediaEntities) => {
   mediaEntities.forEach((entity) => {
     if (entity.type === 'photo') {
       text = text.replace(entity.url, '');
     }
   });
-  return twitterText.autoLink(text, {
-    'usernameIncludeSymbol': true,
-    'targetBlank': true,
-    'urlClass': 'bio__link',
-    'cashtagClass': 'bio__link',
-    'usernameClass': 'bio__link',
-    'hashtagClass': 'bio__link',
-    'urlEntities': urlEntities
+  const actualEntities = twitterText.extractEntitiesWithIndices(text, {
+    extractUrlsWithoutProtocol: false
   });
+  for (let i = 0; i < actualEntities.length; i++) {
+    const entity = actualEntities[i];
+    if (entity.url) {
+      text = buildTextForEntity('url', text, findEntityForUrl(entity.url, urlEntities), entity.url);
+    } else if (entity.hashtag) {
+      text = buildTextForEntity('hashtag', text, entity.hashtag);
+    } else if (entity.screenName) {
+      text = buildTextForEntity('screenName', text, entity.screenName);
+    }
+  }
+  return `<p>${text}</p>`;
 };

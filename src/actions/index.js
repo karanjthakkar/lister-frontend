@@ -38,6 +38,29 @@ const Handlers = {
       };
     }
   },
+  'fetchUserLists': {
+    init(params) {
+      return {
+        'type': 'FETCH_STATUS_FOR_USER_LIST_INIT',
+        params
+      };
+    },
+
+    success(data, params) {
+      return {
+        'type': 'FETCH_STATUS_FOR_USER_LIST_SUCCESS',
+        data,
+        params
+      };
+    },
+
+    error(params) {
+      return {
+        'type': 'FETCH_STATUS_FOR_USER_LIST_ERROR',
+        params
+      };
+    }
+  },
   'doAction': {
     init(params) {
       return {
@@ -75,9 +98,30 @@ const Actions = {
           dispatch(Handlers.fetchStatusForList.success(json, params));
         })
         .catch((error) => {
-          console.log(error);
           const onComplete = function onComplete() {
             dispatch(Handlers.fetchStatusForList.error(params));
+          };
+
+          if (error && error.response && error.response.json) {
+            error.response.json().then(onComplete);
+          } else {
+            onComplete();
+          }
+        });
+    };
+  },
+  fetchUserLists(params) {
+    return (dispatch) => {
+      return dispatch(Handlers.fetchUserLists.success(response1, params));
+      return api.fetchUserLists(params.listId)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then((json) => {
+          dispatch(Handlers.fetchUserLists.success(json, params));
+        })
+        .catch((error) => {
+          const onComplete = function onComplete() {
+            dispatch(Handlers.fetchUserLists.error(params));
           };
 
           if (error && error.response && error.response.json) {
@@ -98,7 +142,6 @@ const Actions = {
           dispatch(Handlers.doAction.success(json, params));
         })
         .catch((error) => {
-          console.log(error);
           const onComplete = function onComplete() {
             dispatch(Handlers.doAction.error(params));
           };
@@ -111,6 +154,36 @@ const Actions = {
         });
     };
   }
+};
+
+const response1 = {
+  "success": true,
+  "data": [
+    {
+      "list_id": "732629595027955712",
+      "list_mode": "public",
+      "list_member_count": 1,
+      "list_subscriber_count": 1,
+      "list_description": "",
+      "list_name": "Testing",
+      "list_created_at": "Tue May 17 17:51:21 +0000 2016",
+      "is_owner": true,
+      "list_owner_author": "tweetifytester",
+      "list_owner_profile_image_url": "https://abs.twimg.com/sticky/default_profile_images/default_profile_4_normal.png"
+    },
+    {
+      "list_id": "199725232",
+      "list_mode": "public",
+      "list_member_count": 4249,
+      "list_subscriber_count": 3,
+      "list_description": "",
+      "list_name": "Insane #GrowthHackers",
+      "list_created_at": "Mon Mar 23 11:54:38 +0000 2015",
+      "is_owner": false,
+      "list_owner_author": "geekykaran",
+      "list_owner_profile_image_url": "https://pbs.twimg.com/profile_images/728274649289785344/W1Ql2Zy__normal.jpg"
+    }
+  ]
 };
 
 const response = {
