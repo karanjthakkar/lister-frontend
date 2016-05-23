@@ -1,28 +1,25 @@
 import { fromJS } from 'immutable';
 
 const initialState = fromJS({
-  'data': {
-    '732629595027955712': {
-      'records': [],
-      'nextPageId': null,
-      'isFetching': true,
-      'isFetchingError': false,
-      'isNextPageFetching': false,
-      'isNextPageFetchingError': false
-    },
-    '199725232': {
-      'records': [],
-      'nextPageId': null,
-      'isFetching': true,
-      'isFetchingError': false,
-      'isNextPageFetching': false,
-      'isNextPageFetchingError': false
-    }
-  }
+  'data': {}
 });
 
 export default function(state = initialState, action) {
   switch(action.type) {
+    case 'FETCH_STATUS_FOR_LIST_BUILD_SCHEMA':
+      const data = {};
+      action.data.data.forEach((item) => {
+        data[item.list_id] = {
+          'records': [],
+          'nextPageId': null,
+          'isFetching': true,
+          'isFetchingError': false,
+          'isNextPageFetching': false,
+          'isNextPageFetchingError': false
+        };
+      });
+      return state.mergeIn(['data'], data);
+
     case 'FETCH_STATUS_FOR_LIST_INIT':
       return state.mergeIn(['data', action.params.listId], fromJS({
         'isFetching': true,

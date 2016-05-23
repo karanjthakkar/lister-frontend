@@ -31,7 +31,7 @@ const TweetListView = React.createClass({
     this.props.actions.fetchStatusForList({
       listId
     });
-    this.setupListData(this.props);  
+    this.setupListData(this.props);
   },
 
   componentWillReceiveProps(nextProps) {
@@ -68,7 +68,11 @@ const TweetListView = React.createClass({
 
   render() {
     if (this.state.isLoading) {
-      return <Text>Loading...</Text>
+      return (
+        <View style={styles.listView}>
+          <Text>Loading...</Text>
+        </View>
+      );
     } else {
       return (
         <View style={styles.listView}>

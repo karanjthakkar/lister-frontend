@@ -29,7 +29,7 @@ const UserListView = React.createClass({
     this.props.actions.fetchUserLists({
       'userId': this.props.userId
     });
-    this.setupListData(this.props);  
+    this.setupListData(this.props);
   },
 
   componentWillReceiveProps(nextProps) {
@@ -54,7 +54,7 @@ const UserListView = React.createClass({
 
   renderListItem(listItem) {
     return (
-      <ListItem data={listItem} 
+      <ListItem data={listItem}
         openListView={this.openListView}
       />
     );
@@ -62,7 +62,11 @@ const UserListView = React.createClass({
 
   render() {
     if (this.state.isLoading) {
-      return <Text>Loading...</Text>
+      return (
+        <View style={styles.listView}>
+          <Text>Loading...</Text>
+        </View>
+      );
     } else {
       return (
         <View style={styles.listView}>

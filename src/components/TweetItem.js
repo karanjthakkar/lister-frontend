@@ -9,8 +9,8 @@ import {
   Linking,
   Alert
 } from 'react-native';
-import { 
-  timeAgo, 
+import {
+  timeAgo,
   autoLink
 } from '../utils/core';
 import HTMLView from 'react-native-htmlview';
@@ -99,13 +99,13 @@ const TweetItem = React.createClass({
               underlayColor={'transparent'}
               onPress={this.openProfileLink}
             >
-              <Image 
-                style={styles.authorImage} 
+              <Image
+                style={styles.authorImage}
                 source={{uri: tweet.get('original_tweet_profile_image_url')}}
               />
             </TouchableHighlight>
           </View>
-          <View style={styles.rightSection}>          
+          <View style={styles.rightSection}>
             <View style={styles.userInfo}>
               <View style={styles.upperSection}>
                 <TouchableHighlight
@@ -132,7 +132,7 @@ const TweetItem = React.createClass({
               </TouchableHighlight>
             </View>
             <Text>
-              <HTMLView 
+              <HTMLView
                 value={this.getTweetText(tweet)}
                 stylesheet={styles}
                 onLinkPress={this.openUrl}
@@ -146,7 +146,7 @@ const TweetItem = React.createClass({
                 const height = width * firstMediaEntity.get('aspectRatio');
                 return (
                   <View style={styles.imageContainer}>
-                    <Image 
+                    <Image
                       style={{
                         width: width,
                         height: height
@@ -155,7 +155,7 @@ const TweetItem = React.createClass({
                     />
                   </View>
                 );
-              } 
+              }
             })()}
             <View style={styles.actions}>
               <TouchableHighlight
@@ -266,42 +266,41 @@ const styles = StyleSheet.create({
   retweetDoneAction: {
     marginRight: 10,
     color: '#19CF86',
-    fontSize: 12,
-    lineHeight: 15
+    fontSize: 14,
+    lineHeight: 17
   },
   retweetAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 12,
-    lineHeight: 15
+    fontSize: 14,
+    lineHeight: 17
   },
   likeDoneAction: {
     marginRight: 10,
     color: '#E81C4F',
-    fontSize: 12,
-    lineHeight: 15
+    fontSize: 14,
+    lineHeight: 17
   },
   likeAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 12,
-    lineHeight: 15
+    fontSize: 14,
+    lineHeight: 17
   },
   retweetIcon: {
-    height: 18,
-    width: 18.75,
+    height: 20,
+    width: 20.833,
     marginRight: 3
   },
   likeIcon: {
-    height: 18,
-    width: 13.5,
+    height: 20,
+    width: 15,
     marginRight: 3
   },
   imageContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
-    marginBottom: 10,
     borderRadius: 5,
     borderWidth: 1,
     borderStyle: 'solid',
