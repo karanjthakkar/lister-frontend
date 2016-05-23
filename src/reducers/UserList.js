@@ -11,13 +11,13 @@ const initialState = fromJS({
 
 export default function(state = initialState, action) {
   switch(action.type) {
-    case 'FETCH_STATUS_FOR_USER_LIST_INIT':
+    case 'FETCH_USER_LIST_INIT':
       return state.merge({
         'isFetching': true,
         'isFetchingError': false
       });
 
-    case 'FETCH_STATUS_FOR_USER_LIST_SUCCESS':
+    case 'FETCH_USER_LIST_SUCCESS':
       // Destructuring assignment after variables have already been declared
       // needs the statement to be enclosed in a parentheses:
       // Source: http://stackoverflow.com/a/34836155
@@ -30,7 +30,7 @@ export default function(state = initialState, action) {
         nextPageId
       });
 
-    case 'FETCH_STATUS_FOR_USER_LIST_ERROR':
+    case 'FETCH_USER_LIST_ERROR':
       return state.merge({
         'isFetching': false,
         'isFetchingError': true

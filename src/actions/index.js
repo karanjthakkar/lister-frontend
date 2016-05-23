@@ -1,4 +1,5 @@
 import api from '../api/core';
+import store from 'react-native-simple-store';
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -49,14 +50,14 @@ const Handlers = {
   'fetchUserLists': {
     init(params) {
       return {
-        'type': 'FETCH_STATUS_FOR_USER_LIST_INIT',
+        'type': 'FETCH_USER_LIST_INIT',
         params
       };
     },
 
     success(data, params) {
       return {
-        'type': 'FETCH_STATUS_FOR_USER_LIST_SUCCESS',
+        'type': 'FETCH_USER_LIST_SUCCESS',
         data,
         params
       };
@@ -64,7 +65,7 @@ const Handlers = {
 
     error(params) {
       return {
-        'type': 'FETCH_STATUS_FOR_USER_LIST_ERROR',
+        'type': 'FETCH_USER_LIST_ERROR',
         params
       };
     }
@@ -99,21 +100,29 @@ const Actions = {
   fetchStatusForList(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchStatusForList.init(params));
-      return api.fetchStatusForList(params.listId)
-        .then(checkStatus)
-        .then(parseJSON)
-        .then((json) => {
-          dispatch(Handlers.fetchStatusForList.success(json, params));
-        })
-        .catch((error) => {
-          const onComplete = function onComplete() {
-            dispatch(Handlers.fetchStatusForList.error(params));
-          };
-
-          if (error && error.response && error.response.json) {
-            error.response.json().then(onComplete);
+      store.get(`TWEET_LIST_${params.listId}`)
+        .then((value) => {
+          if (value) {
+            dispatch(Handlers.fetchStatusForList.success(value, params));
           } else {
-            onComplete();
+            return api.fetchStatusForList(params.listId)
+              .then(checkStatus)
+              .then(parseJSON)
+              .then((json) => {
+                store.save(`TWEET_LIST_${params.listId}`, json);
+                dispatch(Handlers.fetchStatusForList.success(json, params));
+              })
+              .catch((error) => {
+                const onComplete = function onComplete() {
+                  dispatch(Handlers.fetchStatusForList.error(params));
+                };
+
+                if (error && error.response && error.response.json) {
+                  error.response.json().then(onComplete);
+                } else {
+                  onComplete();
+                }
+              });
           }
         });
     };
@@ -121,24 +130,33 @@ const Actions = {
   fetchUserLists(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchUserLists.init(params));
-      return api.fetchUserLists(params.listId)
-        .then(checkStatus)
-        .then(parseJSON)
-        .then((json) => {
-          dispatch(Handlers.fetchUserLists.success(json, params));
-          dispatch(Handlers.fetchStatusForList.build(json, params));
-        })
-        .catch((error) => {
-          const onComplete = function onComplete() {
-            dispatch(Handlers.fetchUserLists.error(params));
-          };
-
-          if (error && error.response && error.response.json) {
-            error.response.json().then(onComplete);
+      store.get('USER_LIST')
+        .then((value) => {
+          if (value) {
+            dispatch(Handlers.fetchUserLists.success(value, params));
+            return dispatch(Handlers.fetchStatusForList.build(value, params));
           } else {
-            onComplete();
+            return api.fetchUserLists(params.listId)
+              .then(checkStatus)
+              .then(parseJSON)
+              .then((json) => {
+                store.save('USER_LIST', json);
+                dispatch(Handlers.fetchUserLists.success(json, params));
+                dispatch(Handlers.fetchStatusForList.build(json, params));
+              })
+              .catch((error) => {
+                const onComplete = function onComplete() {
+                  dispatch(Handlers.fetchUserLists.error(params));
+                };
+
+                if (error && error.response && error.response.json) {
+                  error.response.json().then(onComplete);
+                } else {
+                  onComplete();
+                }
+              });
           }
-        });
+        })
     };
   },
   doAction(params) {
