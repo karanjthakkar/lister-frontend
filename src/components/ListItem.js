@@ -8,6 +8,8 @@ import {
   Image
 } from 'react-native';
 
+import lockIcon from '../images/lock.png';
+
 const UserListView = React.createClass({
   openListView() {
     this.props.openListView(this.props.data);
@@ -20,7 +22,7 @@ const UserListView = React.createClass({
         onPress={this.openListView}
       >
         <View style={styles.listItem}>
-          <View style={styles.leftSection}> 
+          <View style={styles.leftSection}>
             <View style={styles.userInfo}>
               <Text style={styles.name}>
                 {this.props.data.get('list_name')}
@@ -28,6 +30,16 @@ const UserListView = React.createClass({
               <Text style={styles.author}>
                 by {this.props.data.get('list_owner_author')}
               </Text>
+              {(() => {
+                if (this.props.data.get('is_private')) {
+                  return (
+                    <Image
+                      style={styles.lockIcon}
+                      source={lockIcon}
+                    />
+                  );
+                }
+              })()}
             </View>
             <Text style={styles.memberCount}>
               {this.props.data.get('list_member_count')}
@@ -36,7 +48,7 @@ const UserListView = React.createClass({
             </Text>
           </View>
           <View style={styles.rightSection}>
-            <Image 
+            <Image
               style={styles.authorImage}
               source={{uri: this.props.data.get('list_owner_profile_image_url')}}
             />
@@ -56,10 +68,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: 'solid',
     borderBottomColor: '#E1E8ED',
-    alignItems: 'center'
+    height: 70
   },
   name: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 13,
     marginRight: 5
   },
@@ -68,17 +80,22 @@ const styles = StyleSheet.create({
     marginRight: 5,
     color: '#8899a6'
   },
+  lockIcon: {
+    width: 12,
+    height: 12
+  },
   memberCount: {
     fontSize: 11,
     marginRight: 5,
+    marginTop: 2,
     color: '#8899a6'
   },
   userInfo: {
     flexDirection: 'row'
   },
   authorImage: {
-    width: 34,
-    height: 34,
+    width: 35,
+    height: 35,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,.1)',

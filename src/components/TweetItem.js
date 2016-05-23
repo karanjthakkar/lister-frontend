@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import {
   timeAgo,
-  autoLink
+  autoLink,
+  humanize
 } from '../utils/core';
 import HTMLView from 'react-native-htmlview';
 
@@ -87,111 +88,105 @@ const TweetItem = React.createClass({
     const actionRetweet = this.state.hasRetweeted ? styles.retweetDoneAction : styles.retweetAction;
     const actionLike = this.state.hasLiked ? styles.likeDoneAction : styles.likeAction;
     return (
-      <TouchableHighlight
-        activeOpacity={1}
-        underlayColor={'#f5f8fa'}
-        onPress={this.openTweetLink}
-      >
-        <View style={styles.tweetItem}>
-          <View style={styles.leftSection}>
+      <View style={styles.tweetItem}>
+        <View style={styles.leftSection}>
+          <TouchableHighlight
+            activeOpacity={1}
+            underlayColor={'transparent'}
+            onPress={this.openProfileLink}
+          >
+            <Image
+              style={styles.authorImage}
+              source={{uri: tweet.get('original_tweet_profile_image_url')}}
+            />
+          </TouchableHighlight>
+        </View>
+        <View style={styles.rightSection}>
+          <View style={styles.userInfo}>
+            <View style={styles.upperSection}>
+              <TouchableHighlight
+                activeOpacity={1}
+                underlayColor={'transparent'}
+                onPress={this.openProfileLink}
+              >
+                <Text style={styles.author}>{tweet.get('original_tweet_author_name')}</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                activeOpacity={1}
+                underlayColor={'transparent'}
+                onPress={this.openProfileLink}
+              >
+                <Text style={styles.username}>@{tweet.get('original_tweet_author')}</Text>
+              </TouchableHighlight>
+            </View>
             <TouchableHighlight
               activeOpacity={1}
               underlayColor={'transparent'}
-              onPress={this.openProfileLink}
+              onPress={this.openTweetLink}
             >
-              <Image
-                style={styles.authorImage}
-                source={{uri: tweet.get('original_tweet_profile_image_url')}}
-              />
+              <Text style={styles.time}>{timeAgo(tweet.get('tweet_posted_at'))}</Text>
             </TouchableHighlight>
           </View>
-          <View style={styles.rightSection}>
-            <View style={styles.userInfo}>
-              <View style={styles.upperSection}>
-                <TouchableHighlight
-                  activeOpacity={1}
-                  underlayColor={'transparent'}
-                  onPress={this.openProfileLink}
-                >
-                  <Text style={styles.author}>{tweet.get('original_tweet_author_name')}</Text>
-                </TouchableHighlight>
-                <TouchableHighlight
-                  activeOpacity={1}
-                  underlayColor={'transparent'}
-                  onPress={this.openProfileLink}
-                >
-                  <Text style={styles.username}>@{tweet.get('original_tweet_author')}</Text>
-                </TouchableHighlight>
+          <Text>
+            <HTMLView
+              value={this.getTweetText(tweet)}
+              stylesheet={styles}
+              onLinkPress={this.openUrl}
+            ></HTMLView>
+          </Text>
+          {(() => {
+            const firstMediaEntity = tweet.get('tweet_media_entities').first();
+            if (tweet.get('tweet_media_entities').count() > 0
+                && firstMediaEntity.get('type') === 'photo') {
+              const width = this.props.mediaWidth;
+              const height = width * firstMediaEntity.get('aspectRatio');
+              return (
+                <View style={styles.imageContainer}>
+                  <Image
+                    style={{
+                      width: width,
+                      height: height
+                    }}
+                    source={{uri: firstMediaEntity.get('media_url')}}
+                  />
+                </View>
+              );
+            }
+          })()}
+          <View style={styles.actions}>
+            <TouchableHighlight
+              activeOpacity={1}
+              underlayColor={'transparent'}
+              onPress={this.doRetweetAction}
+            >
+              <View style={styles.actionContainer}>
+                <Image
+                  style={styles.retweetIcon}
+                  source={iconRetweet}
+                />
+                <Text style={actionRetweet}>
+                  {humanize(tweet.get('retweet_count'))}
+                </Text>
               </View>
-              <TouchableHighlight
-                activeOpacity={1}
-                underlayColor={'transparent'}
-                onPress={this.openTweetLink}
-              >
-                <Text style={styles.time}>{timeAgo(tweet.get('tweet_posted_at'))}</Text>
-              </TouchableHighlight>
-            </View>
-            <Text>
-              <HTMLView
-                value={this.getTweetText(tweet)}
-                stylesheet={styles}
-                onLinkPress={this.openUrl}
-              ></HTMLView>
-            </Text>
-            {(() => {
-              const firstMediaEntity = tweet.get('tweet_media_entities').first();
-              if (tweet.get('tweet_media_entities').count() > 0
-                  && firstMediaEntity.get('type') === 'photo') {
-                const width = this.props.mediaWidth;
-                const height = width * firstMediaEntity.get('aspectRatio');
-                return (
-                  <View style={styles.imageContainer}>
-                    <Image
-                      style={{
-                        width: width,
-                        height: height
-                      }}
-                      source={{uri: firstMediaEntity.get('media_url')}}
-                    />
-                  </View>
-                );
-              }
-            })()}
-            <View style={styles.actions}>
-              <TouchableHighlight
-                activeOpacity={1}
-                underlayColor={'transparent'}
-                onPress={this.doRetweetAction}
-              >
-                <View style={styles.actionContainer}>
-                  <Image
-                    style={styles.retweetIcon}
-                    source={iconRetweet}
-                  />
-                  <Text style={actionRetweet}>
-                    {tweet.get('retweet_count')}
-                  </Text>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight
-                activeOpacity={1}
-                underlayColor={'transparent'}
-                onPress={this.doLikeAction}
-              >
-                <View style={styles.actionContainer}>
-                  <Image
-                    style={styles.likeIcon}
-                    source={iconLike}
-                  />
-                  <Text style={actionLike}>
-                    {tweet.get('favorite_count')}
-                  </Text>
-                </View>
-              </TouchableHighlight>
-            </View>
+            </TouchableHighlight>
+            <TouchableHighlight
+              activeOpacity={1}
+              underlayColor={'transparent'}
+              onPress={this.doLikeAction}
+            >
+              <View style={styles.actionContainer}>
+                <Image
+                  style={styles.likeIcon}
+                  source={iconLike}
+                />
+                <Text style={actionLike}>
+                  {humanize(tweet.get('favorite_count'))}
+                </Text>
+              </View>
+            </TouchableHighlight>
           </View>
         </View>
-      </TouchableHighlight>
+      </View>
     );
   }
 });
@@ -255,7 +250,7 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     flexDirection: 'row',
-    width: 50
+    width: 70
   },
   action: {
     marginRight: 10,

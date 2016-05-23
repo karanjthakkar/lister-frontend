@@ -1,6 +1,6 @@
 export default {
   fetchStatusForList(listId) {
-    return fetch(`http://local.lister.co:3000/user/3303637404/list/${listId}/statuses`, {
+    return fetch(`http://192.168.0.101:3000/user/3303637404/list/${listId}/statuses`, {
       'credentials': 'include',
       'headers': {
         'cookie': 'connect.sid=s%3Azb0MbsWDJXh-TEh9GjPKuSvS9Z_j_zcJ.mtNiJL0xCquXZ8geBJoFs3nMszFviybdrnO%2BpXjxISs'
@@ -8,7 +8,7 @@ export default {
     });
   },
   fetchUserLists(userId) {
-    return fetch(`http://local.lister.co:3000/user/3303637404/lists`, {
+    return fetch(`http://192.168.0.101:3000/user/3303637404/lists`, {
       'credentials': 'include',
       'headers': {
         'cookie': 'connect.sid=s%3Azb0MbsWDJXh-TEh9GjPKuSvS9Z_j_zcJ.mtNiJL0xCquXZ8geBJoFs3nMszFviybdrnO%2BpXjxISs'
@@ -22,7 +22,7 @@ export default {
     }
   },
   takeActionOnTweet(type, userId, tweetId) {
-    return fetch(`http://local.lister.co:3000/user/${userId}/tweet_action/${type}/${tweetId}`, {
+    return fetch(`http://192.168.0.101:3000/user/${userId}/tweet_action/${type}/${tweetId}`, {
       'method': 'POST',
       'credentials': 'include',
       'headers': {

@@ -1,5 +1,13 @@
 import moment from 'moment';
+import numeral from 'numeral';
 import twitterText from 'twitter-text';
+
+export const humanize = (number) => {
+  if (number < 0) {
+    return '0';
+  }
+  return numeral(number).format('0[.]0a');
+}
 
 export const timeAgo = (time) => {
   return moment(time, 'ddd MMM DD HH:mm:ss ZZ GGGG').fromNow(true);

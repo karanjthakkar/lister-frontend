@@ -4,7 +4,8 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableHighlight
+  TouchableHighlight,
+  ActivityIndicatorIOS
 } from 'react-native';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
@@ -63,8 +64,11 @@ const UserListView = React.createClass({
   render() {
     if (this.state.isLoading) {
       return (
-        <View style={styles.listView}>
-          <Text>Loading...</Text>
+        <View style={styles.loading}>
+          <ActivityIndicatorIOS
+            animating={true}
+            size="small"
+          />
         </View>
       );
     } else {
@@ -84,7 +88,14 @@ const styles = StyleSheet.create({
   listView: {
     paddingTop: 64,
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
+    backgroundColor: '#FFFFFF'
+  },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF'
   }
 });
 
