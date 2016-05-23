@@ -5,7 +5,8 @@ import {
   Text,
   View,
   StyleSheet,
-  ActivityIndicatorIOS
+  ActivityIndicatorIOS,
+  InteractionManager
 } from 'react-native';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
@@ -23,16 +24,28 @@ const TweetListView = React.createClass({
   getInitialState() {
     return {
       'mediaWidth': Dimensions.get('window').width - 64,
-      'isLoading': true
+      'isLoading': true,
+      'renderPlaceholderOnly': true
     };
   },
 
   componentWillMount() {
     const listId = this.props.data.get('list_id');
+    const { userId, cookie } = this.props;
     this.props.actions.fetchStatusForList({
-      listId
+      listId,
+      userId,
+      cookie
     });
     this.setupListData(this.props);
+  },
+
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({
+        renderPlaceholderOnly: false
+      });
+    });
   },
 
   componentWillReceiveProps(nextProps) {
@@ -45,7 +58,7 @@ const TweetListView = React.createClass({
     const isLoading = props.TweetList.getIn(['data', listId, 'isFetching']);
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
-      isLoading
+      'isLoading': isLoading
     });
   },
 
@@ -68,7 +81,7 @@ const TweetListView = React.createClass({
   },
 
   render() {
-    if (this.state.isLoading) {
+    if (this.state.isLoading || this.state.renderPlaceholderOnly) {
       return (
         <View style={styles.loading}>
           <ActivityIndicatorIOS
@@ -83,6 +96,7 @@ const TweetListView = React.createClass({
           <ListView
             dataSource={this.state.data}
             renderRow={this.renderTweetItem}
+            initialListSize={1}
           />
         </View>
       );

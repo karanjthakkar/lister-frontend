@@ -5,7 +5,8 @@ import {
   View,
   StyleSheet,
   TouchableHighlight,
-  ActivityIndicatorIOS
+  ActivityIndicatorIOS,
+  InteractionManager
 } from 'react-native';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
@@ -22,15 +23,25 @@ const ds = new ListView.DataSource({
 const UserListView = React.createClass({
   getInitialState() {
     return {
-      'isLoading': true
+      'isLoading': true,
+      'renderPlaceholderOnly': true
     };
   },
 
   componentWillMount() {
     this.props.actions.fetchUserLists({
-      'userId': this.props.userId
+      'userId': this.props.userId,
+      'cookie': this.props.cookie
     });
     this.setupListData(this.props);
+  },
+
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({
+        renderPlaceholderOnly: false
+      });
+    });
   },
 
   componentWillReceiveProps(nextProps) {
@@ -42,7 +53,7 @@ const UserListView = React.createClass({
     const isLoading = props.UserList.get('isFetching');
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
-      isLoading
+      'isLoading': isLoading
     });
   },
 
@@ -62,7 +73,7 @@ const UserListView = React.createClass({
   },
 
   render() {
-    if (this.state.isLoading) {
+    if (this.state.isLoading || this.state.renderPlaceholderOnly) {
       return (
         <View style={styles.loading}>
           <ActivityIndicatorIOS

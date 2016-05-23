@@ -105,7 +105,7 @@ const Actions = {
           if (value) {
             dispatch(Handlers.fetchStatusForList.success(value, params));
           } else {
-            return api.fetchStatusForList(params.listId)
+            return api.fetchStatusForList(params.userId, params.listId, params.cookie)
               .then(checkStatus)
               .then(parseJSON)
               .then((json) => {
@@ -130,17 +130,17 @@ const Actions = {
   fetchUserLists(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchUserLists.init(params));
-      store.get('USER_LIST')
+      store.get(`USER_LIST_${params.userId}`)
         .then((value) => {
           if (value) {
             dispatch(Handlers.fetchUserLists.success(value, params));
             return dispatch(Handlers.fetchStatusForList.build(value, params));
           } else {
-            return api.fetchUserLists(params.listId)
+            return api.fetchUserLists(params.userId, params.cookie)
               .then(checkStatus)
               .then(parseJSON)
               .then((json) => {
-                store.save('USER_LIST', json);
+                store.save(`USER_LIST_${params.userId}`, json);
                 dispatch(Handlers.fetchUserLists.success(json, params));
                 dispatch(Handlers.fetchStatusForList.build(json, params));
               })

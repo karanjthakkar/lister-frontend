@@ -1,32 +1,125 @@
 import React from 'react';
 import {
+  AsyncStorage,
   Navigator,
   Text,
   View,
   StyleSheet,
   TouchableOpacity,
-  Image
+  Image,
+  ActivityIndicatorIOS
 } from 'react-native';
 import TweetListView from '../components/TweetListView';
 import UserListView from '../components/UserListView';
+import LoginScreen from '../components/LoginScreen';
+import Twitterlogin from '../components/Twitterlogin';
+
+import store from 'react-native-simple-store';
 
 import backIcon from '../images/left_arrow_blue.png';
 
 const App = React.createClass({
 
+  getInitialState() {
+    return {
+      'isAuthenticated': false,
+      'isWebView': false,
+      'isLoading': true,
+      'cookie': null,
+      'userId': null
+    };
+  },
+
+  componentWillMount() {
+    store.get('COOKIE')
+      .then((cookie) => {
+        store.get('USER_ID')
+          .then((userId) => {
+            if (cookie && userId) {
+              this.setState({
+                'isAuthenticated': true,
+                'isLoading': false,
+                'cookie': cookie,
+                'userId': userId
+              });
+            } else {
+              this.setState({
+                'isAuthenticated': false,
+                'isLoading': false
+              });
+            }
+          });
+      });
+  },
+
+  logout() {
+    CookieManager.clearAll((err, res) => {
+      store.delete('COOKIE')
+        .then(() => {
+          store.delete('USER_ID')
+            .then(() => {
+              this.setState({
+                'isAuthenticated': false,
+                'isWebView': false,
+                'isLoading': false,
+                'cookie': null,
+                'userId': null
+              });
+            });
+        });
+    });
+  },
+
+  openWebView() {
+    this.setState({
+      'isWebView': true
+    });
+  },
+
+  onComplete(userId, cookie) {
+    store.save('COOKIE', cookie)
+      .then(() => {
+        store.save('USER_ID', userId)
+          .then(() => {
+            this.setState({
+              'isWebView': false,
+              'isAuthenticated': true,
+              'userId': userId,
+              'cookie': cookie
+            });
+          });
+      });
+  },
+
+  onFailure() {
+    this.setState({
+      'isWebView': false
+    });
+    Alert.alert(
+      'Error',
+      `Unable to login.`,
+      [
+        {text: 'OK'}
+      ]
+    );
+  },
+
   renderScene(route, navigator) {
     if (route.name === 'UserListView') {
       return (
-        <UserListView 
+        <UserListView
           navigator={navigator}
-          userId={'3303637404'}
+          userId={this.state.userId}
+          cookie={this.state.cookie}
         />
       );
     } else if (route.name === 'TweetListView') {
       return (
-        <TweetListView 
+        <TweetListView
           navigator={navigator}
           data={route.listItem}
+          userId={this.state.userId}
+          cookie={this.state.cookie}
         />
       );
     }
@@ -37,11 +130,11 @@ const App = React.createClass({
       LeftButton(route, navigator, index, navState) {
         if (route.name === 'TweetListView') {
           return (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => navigator.pop()}
               style={styles.backButton}
             >
-              <Image 
+              <Image
                 style={styles.backIcon}
                 source={backIcon}
               />
@@ -61,7 +154,7 @@ const App = React.createClass({
       }
     };
     return (
-      <Navigator.NavigationBar 
+      <Navigator.NavigationBar
         style={styles.navBar}
         routeMapper={NavigationBarRouteMapper}
       />
@@ -69,6 +162,32 @@ const App = React.createClass({
   },
 
   render() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading}>
+          <ActivityIndicatorIOS
+            animating={true}
+            size="small"
+          />
+        </View>
+      );
+    }
+
+    if (!this.state.isAuthenticated) {
+      if (this.state.isWebView) {
+        return (
+          <Twitterlogin
+            onComplete={this.onComplete}
+            onFailure={this.onFailure}
+          />
+        );
+      } else {
+        return (
+          <LoginScreen openWebView={this.openWebView} />
+        );
+      }
+    }
+
     return (
       <Navigator
         initialRoute={{
@@ -109,6 +228,12 @@ const styles = StyleSheet.create({
     width: 10,
     height: 15,
     marginRight: 5
+  },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF'
   }
 });
 
