@@ -1,6 +1,6 @@
 export default {
   fetchStatusForList(userId, listId, cookie) {
-    return fetch(`http://192.168.0.101:3000/user/${userId}/list/${listId}/statuses`, {
+    return fetch(`http://api.tweetify.io/user/${userId}/list/${listId}/statuses`, {
       'credentials': 'include',
       'headers': {
         'cookie': cookie
@@ -8,7 +8,7 @@ export default {
     });
   },
   fetchUserLists(userId, cookie) {
-    return fetch(`http://192.168.0.101:3000/user/${userId}/lists`, {
+    return fetch(`http://api.tweetify.io/user/${userId}/lists`, {
       'credentials': 'include',
       'headers': {
         'cookie': cookie
@@ -22,7 +22,7 @@ export default {
     }
   },
   takeActionOnTweet(type, userId, tweetId, cookie) {
-    return fetch(`http://192.168.0.101:3000/user/${userId}/tweet_action/${type}/${tweetId}`, {
+    return fetch(`http://api.tweetify.io/user/${userId}/tweet_action/${type}/${tweetId}`, {
       'method': 'POST',
       'credentials': 'include',
       'headers': {

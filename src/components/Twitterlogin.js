@@ -12,7 +12,7 @@ var TwitterLogin = React.createClass({
 
   onNavigationStateChange(data) {
     const url = data.url;
-    const callbackUrlSegment = 'http://local.lister.co:3000/?code=';
+    const callbackUrlSegment = 'http://staging.tweetify.io/?code=';
     if (url.indexOf(callbackUrlSegment) > -1) {
       const userId = url.replace(callbackUrlSegment, '');
       if (userId !== '0') {
@@ -21,9 +21,11 @@ var TwitterLogin = React.createClass({
           for (var key in res) {
             cookie += key + '=' + res[key] + ';';
           }
+          this.refs.webview.stopLoading();
           this.props.onComplete(userId, cookie);
         });
       } else {
+        this.refs.webview.stopLoading();
         this.props.onFailure(cookie);
       }
     }
@@ -43,8 +45,9 @@ var TwitterLogin = React.createClass({
   render() {
     return (
       <WebView
+        ref="webview"
         automaticallyAdjustContentInsets={false}
-        source={{uri: 'http://local.lister.co:3000/auth/twitter'}}
+        source={{uri: 'http://api.tweetify.io/auth/twitter'}}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         decelerationRate="normal"

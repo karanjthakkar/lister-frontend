@@ -22,7 +22,7 @@ const LoginScreen = React.createClass({
             color: '#000',
             fontWeight: 'bold',
             fontSize: 40
-          }}>Hazir</Text>
+          }}>Tweetify</Text>
         </View>
         <TouchableHighlight onPress={this.props.openWebView}>
           <View style={{
