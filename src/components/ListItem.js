@@ -28,7 +28,7 @@ const UserListView = React.createClass({
                 {this.props.data.get('list_name')}
               </Text>
               <Text style={styles.author}>
-                by {this.props.data.get('list_owner_author')}
+                by @{this.props.data.get('list_owner_author')}
               </Text>
               {(() => {
                 if (this.props.data.get('is_private')) {
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     color: '#8899a6'
   },
   lockIcon: {
-    width: 12,
-    height: 12
+    width: 8,
+    height: 8
   },
   memberCount: {
     fontSize: 11,
@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
     color: '#8899a6'
   },
   userInfo: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   authorImage: {
     width: 35,

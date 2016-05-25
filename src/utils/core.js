@@ -1,3 +1,4 @@
+import { AsyncStorage } from 'react-native';
 import moment from 'moment';
 import numeral from 'numeral';
 import twitterText from 'twitter-text';
@@ -22,6 +23,14 @@ function findEntityForUrl(url, urlEntities) {
   });
   return entity.display_url;
 }
+
+export const clearLocalCache = (callback) => {
+  AsyncStorage.getAllKeys((err, keys) => {
+    AsyncStorage.multiRemove(keys, () => {
+      callback();
+    });
+  });
+};
 
 function buildTextForEntity(type, text, replaceText, originalText) {
   let urlMarkup = '';

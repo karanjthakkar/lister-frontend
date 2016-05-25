@@ -30,6 +30,9 @@ const TweetListView = React.createClass({
   },
 
   componentWillMount() {
+
+    this.isMounted = true;
+
     const listId = this.props.data.get('list_id');
     const { userId, cookie } = this.props;
     this.props.actions.fetchStatusForList({
@@ -40,11 +43,17 @@ const TweetListView = React.createClass({
     this.setupListData(this.props);
   },
 
+  componentWillUnmount() {
+    this.isMounted = false;
+  },
+
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
-      this.setState({
-        renderPlaceholderOnly: false
-      });
+      if (this.isMounted) {
+        this.setState({
+          renderPlaceholderOnly: false
+        });
+      }
     });
   },
 
@@ -96,7 +105,7 @@ const TweetListView = React.createClass({
           <ListView
             dataSource={this.state.data}
             renderRow={this.renderTweetItem}
-            initialListSize={1}
+            initialListSize={5}
           />
         </View>
       );

@@ -45,6 +45,7 @@ var TwitterLogin = React.createClass({
   render() {
     return (
       <WebView
+        style={styles.webview}
         ref="webview"
         automaticallyAdjustContentInsets={false}
         source={{uri: 'http://api.tweetify.io/auth/twitter'}}
@@ -61,6 +62,9 @@ var TwitterLogin = React.createClass({
 });
 
 const styles = StyleSheet.create({
+  webview: {
+    marginTop: 20
+  },
   loading: {
     flex: 1,
     alignItems: 'center',

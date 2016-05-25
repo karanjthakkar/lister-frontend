@@ -1,22 +1,27 @@
 import React from 'react';
 import {
-  AsyncStorage,
   Navigator,
   Text,
   View,
   StyleSheet,
   TouchableOpacity,
   Image,
-  ActivityIndicatorIOS
+  ActivityIndicatorIOS,
+  ActionSheetIOS
 } from 'react-native';
+import CookieManager from 'react-native-cookies';
+
 import TweetListView from '../components/TweetListView';
 import UserListView from '../components/UserListView';
 import LoginScreen from '../components/LoginScreen';
 import Twitterlogin from '../components/Twitterlogin';
+import { clearLocalCache } from '../utils/core';
 
 import store from 'react-native-simple-store';
 
 import backIcon from '../images/left_arrow_blue.png';
+import settingsIcon from '../images/settings.png';
+import refreshIcon from '../images/refresh.png';
 
 const App = React.createClass({
 
@@ -54,19 +59,13 @@ const App = React.createClass({
 
   logout() {
     CookieManager.clearAll((err, res) => {
-      store.delete('COOKIE')
-        .then(() => {
-          store.delete('USER_ID')
-            .then(() => {
-              this.setState({
-                'isAuthenticated': false,
-                'isWebView': false,
-                'isLoading': false,
-                'cookie': null,
-                'userId': null
-              });
-            });
-        });
+      this.setState({
+        'isAuthenticated': false,
+        'isWebView': false,
+        'isLoading': false,
+        'cookie': null,
+        'userId': null
+      });
     });
   },
 
@@ -126,13 +125,14 @@ const App = React.createClass({
   },
 
   renderNavBar() {
+    const _this = this;
     const NavigationBarRouteMapper = {
       LeftButton(route, navigator, index, navState) {
         if (route.name === 'TweetListView') {
           return (
             <TouchableOpacity
               onPress={() => navigator.pop()}
-              style={styles.backButton}
+              style={styles.navButton}
             >
               <Image
                 style={styles.backIcon}
@@ -145,12 +145,50 @@ const App = React.createClass({
         return null;
       },
       Title(route, navigator, index, navState) {
-        return(
-          <Text style={styles.title}>{route.name}</Text>
-        )
+        if (route.name === 'UserListView') {
+          return(
+            <Text style={styles.title}>
+              Your Lists
+            </Text>
+          );
+        } else {
+          return(
+            <View style={styles.headingContainer}>
+              <Text style={styles.heading}>
+                {route.listItem.get('list_name')}
+              </Text>
+              <Text style={styles.subheading}>
+                @{route.listItem.get('list_owner_author')}
+              </Text>
+            </View>
+          );
+        }
       },
-      RightButton() {
-        return null;
+      RightButton(route, navigator, index, navState) {
+        if (route.name === 'UserListView') {
+          return (
+            <TouchableOpacity
+              onPress={_this.showSettings}
+              style={styles.navButton}
+            >
+              <Image
+                style={styles.navIcon}
+                source={settingsIcon}
+              />
+            </TouchableOpacity>
+          );
+        } else {
+          return (
+            <TouchableOpacity
+              style={styles.navButton}
+            >
+              <Image
+                style={styles.navIcon}
+                source={refreshIcon}
+              />
+            </TouchableOpacity>
+          );
+        }
       }
     };
     return (
@@ -159,6 +197,21 @@ const App = React.createClass({
         routeMapper={NavigationBarRouteMapper}
       />
     );
+  },
+
+  showSettings() {
+    ActionSheetIOS.showActionSheetWithOptions({
+      options: [
+        'Logout',
+        'Cancel',
+      ],
+      cancelButtonIndex: 1,
+      destructiveButtonIndex: 0
+    }, (buttonIndex) => {
+      if (buttonIndex === 0) {
+        clearLocalCache(this.logout);
+      }
+    });
   },
 
   render() {
@@ -212,7 +265,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold'
   },
-  backButton: {
+  navButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -229,12 +282,29 @@ const styles = StyleSheet.create({
     height: 15,
     marginRight: 5
   },
+  navIcon: {
+    width: 20,
+    height: 20,
+    opacity: 0.7,
+    marginRight: 5
+  },
   loading: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF'
-  }
+  },
+  heading: {
+    marginTop: 5,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  subheading: {
+    fontSize: 11,
+    textAlign: 'center',
+    color: '#8899a6'
+  },
 });
 
 export default App;

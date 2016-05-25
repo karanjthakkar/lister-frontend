@@ -145,7 +145,7 @@ const Actions = {
                 dispatch(Handlers.fetchStatusForList.build(json, params));
               })
               .catch((error) => {
-                const onComplete = function onComplete() {
+                const onComplete = function onComplete(res) {
                   dispatch(Handlers.fetchUserLists.error(params));
                 };
 
