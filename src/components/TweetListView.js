@@ -65,9 +65,11 @@ const TweetListView = React.createClass({
     const listId = this.props.data.get('list_id');
     const data = props.TweetList.getIn(['data', listId, 'records']);
     const isLoading = props.TweetList.getIn(['data', listId, 'isFetching']);
+    const isNextPageLoading = props.TweetList.getIn(['data', listId, 'isNextPageFetching']);
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
-      'isLoading': isLoading
+      isLoading,
+      isNextPageLoading
     });
   },
 
@@ -89,6 +91,25 @@ const TweetListView = React.createClass({
     );
   },
 
+  renderNextPageLoading() {
+    if(this.state.isNextPageLoading) {
+      return (
+        <View style={styles.nextPageLoading}>
+          <ActivityIndicatorIOS
+            animating={true}
+            size="small"
+          />
+        </View>
+      );
+    }
+  },
+
+  fetchNextPage() {
+    this.setState({
+      'isNextPageLoading': true
+    });
+  },
+
   render() {
     if (this.state.isLoading || this.state.renderPlaceholderOnly) {
       return (
@@ -106,6 +127,8 @@ const TweetListView = React.createClass({
             dataSource={this.state.data}
             renderRow={this.renderTweetItem}
             initialListSize={5}
+            renderFooter={this.renderNextPageLoading}
+            onEndReached={this.fetchNextPage}
           />
         </View>
       );
@@ -122,6 +145,12 @@ const styles = StyleSheet.create({
   },
   loading: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF'
+  },
+  nextPageLoading: {
+    padding: 15,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF'
