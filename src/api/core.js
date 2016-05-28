@@ -7,6 +7,14 @@ export default {
       }
     });
   },
+  fetchNextPage(userId, listId, cookie, nextPageId) {
+    return fetch(`http://api.tweetify.io/user/${userId}/list/${listId}/statuses?max_id=${nextPageId}`, {
+      'credentials': 'include',
+      'headers': {
+        'cookie': cookie
+      }
+    });
+  },
   fetchUserLists(userId, cookie) {
     return fetch(`http://api.tweetify.io/user/${userId}/lists`, {
       'credentials': 'include',

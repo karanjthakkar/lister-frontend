@@ -47,6 +47,29 @@ const Handlers = {
       };
     }
   },
+  'fetchNextPage': {
+    init(params) {
+      return {
+        'type': 'FETCH_NEXT_STATUS_FOR_LIST_INIT',
+        params
+      };
+    },
+
+    success(data, params) {
+      return {
+        'type': 'FETCH_NEXT_STATUS_FOR_LIST_SUCCESS',
+        data,
+        params
+      };
+    },
+
+    error(params) {
+      return {
+        'type': 'FETCH_NEXT_STATUS_FOR_LIST_ERROR',
+        params
+      };
+    }
+  },
   'fetchUserLists': {
     init(params) {
       return {
@@ -100,11 +123,11 @@ const Actions = {
   fetchStatusForList(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchStatusForList.init(params));
-      store.get(`TWEET_LIST_${params.listId}`)
-        .then((value) => {
-          if (value) {
-            dispatch(Handlers.fetchStatusForList.success(value, params));
-          } else {
+      // store.get(`TWEET_LIST_${params.listId}`)
+      //   .then((value) => {
+      //     if (value) {
+      //       dispatch(Handlers.fetchStatusForList.success(value, params));
+      //     } else {
             return api.fetchStatusForList(params.userId, params.listId, params.cookie)
               .then(checkStatus)
               .then(parseJSON)
@@ -123,6 +146,38 @@ const Actions = {
                   onComplete();
                 }
               });
+        //   }
+        // });
+    };
+  },
+  fetchNextPage(params) {
+    return (dispatch) => {
+      console.log('called next page', params.cookie)
+      dispatch(Handlers.fetchNextPage.init(params));
+      return api.fetchNextPage(params.userId, params.listId, params.cookie, params.nextPageId)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then((json) => {
+          store.get(`TWEET_LIST_${params.listId}`)
+            .then((oldJson) => {
+              store.save(`TWEET_LIST_${params.listId}`, {
+                'success': json.success,
+                'data': oldJson.data.concat(json.data),
+                'next_max_id': json.next_max_id
+              });
+            });
+          dispatch(Handlers.fetchNextPage.success(json, params));
+        })
+        .catch((error) => {
+          console.log(error);
+          const onComplete = function onComplete(res) {
+            dispatch(Handlers.fetchNextPage.error(params));
+          };
+
+          if (error && error.response && error.response.json) {
+            error.response.json().then(onComplete);
+          } else {
+            onComplete();
           }
         });
     };
@@ -130,12 +185,12 @@ const Actions = {
   fetchUserLists(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchUserLists.init(params));
-      store.get(`USER_LIST_${params.userId}`)
-        .then((value) => {
-          if (value) {
-            dispatch(Handlers.fetchUserLists.success(value, params));
-            return dispatch(Handlers.fetchStatusForList.build(value, params));
-          } else {
+      // store.get(`USER_LIST_${params.userId}`)
+      //   .then((value) => {
+      //     if (value) {
+      //       dispatch(Handlers.fetchUserLists.success(value, params));
+      //       return dispatch(Handlers.fetchStatusForList.build(value, params));
+      //     } else {
             return api.fetchUserLists(params.userId, params.cookie)
               .then(checkStatus)
               .then(parseJSON)
@@ -155,8 +210,8 @@ const Actions = {
                   onComplete();
                 }
               });
-          }
-        })
+        //   }
+        // })
     };
   },
   doAction(params) {
