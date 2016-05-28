@@ -76,7 +76,7 @@ const TweetListView = React.createClass({
   },
 
   userAction(action, tweetId) {
-    const coookie = this.props.cookie;
+    const cookie = this.props.cookie;
     this.props.actions.doAction({
       type: action,
       userId: '3303637404',
