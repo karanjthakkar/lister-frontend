@@ -152,7 +152,6 @@ const Actions = {
   },
   fetchNextPage(params) {
     return (dispatch) => {
-      console.log('called next page', params.cookie)
       dispatch(Handlers.fetchNextPage.init(params));
       return api.fetchNextPage(params.userId, params.listId, params.cookie, params.nextPageId)
         .then(checkStatus)
@@ -169,7 +168,6 @@ const Actions = {
           dispatch(Handlers.fetchNextPage.success(json, params));
         })
         .catch((error) => {
-          console.log(error);
           const onComplete = function onComplete(res) {
             dispatch(Handlers.fetchNextPage.error(params));
           };

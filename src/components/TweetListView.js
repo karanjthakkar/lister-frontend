@@ -76,10 +76,12 @@ const TweetListView = React.createClass({
   },
 
   userAction(action, tweetId) {
+    const coookie = this.props.cookie;
     this.props.actions.doAction({
       type: action,
       userId: '3303637404',
-      tweetId
+      tweetId,
+      cookie
     });
   },
 
@@ -94,7 +96,9 @@ const TweetListView = React.createClass({
   },
 
   renderNextPageLoading() {
-    if(this.state.isNextPageLoading) {
+    const listId = this.props.data.get('list_id');
+    const nextPageId = this.props.TweetList.getIn(['data', listId, 'nextPageId']);
+    if (nextPageId) {
       return (
         <View style={styles.nextPageLoading}>
           <ActivityIndicatorIOS
