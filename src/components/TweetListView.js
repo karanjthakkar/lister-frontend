@@ -76,10 +76,10 @@ const TweetListView = React.createClass({
   },
 
   userAction(action, tweetId) {
-    const cookie = this.props.cookie;
+    const { userId, cookie } = this.props;
     this.props.actions.doAction({
       type: action,
-      userId: '3303637404',
+      userId: userId,
       tweetId,
       cookie
     });
