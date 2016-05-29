@@ -93,17 +93,17 @@ const Handlers = {
       };
     }
   },
-  'doAction': {
+  'tweetAction': {
     init(params) {
       return {
-        'type': 'DO_ACTION_INIT',
+        'type': 'TWEET_ACTION_INIT',
         params
       };
     },
 
     success(data, params) {
       return {
-        'type': 'DO_ACTION_SUCCESS',
+        'type': 'TWEET_ACTION_SUCCESS',
         data,
         params
       };
@@ -111,7 +111,7 @@ const Handlers = {
 
     error(params) {
       return {
-        'type': 'DO_ACTION_ERROR',
+        'type': 'TWEET_ACTION_ERROR',
         params
       };
     }
@@ -227,18 +227,18 @@ const Actions = {
       }
     };
   },
-  doAction(params) {
+  tweetAction(params) {
     return (dispatch) => {
-      dispatch(Handlers.doAction.init(params));
-      return api.doAction(params)
+      dispatch(Handlers.tweetAction.init(params));
+      return api.tweetAction(params)
         .then(checkStatus)
         .then(parseJSON)
         .then((json) => {
-          dispatch(Handlers.doAction.success(json, params));
+          dispatch(Handlers.tweetAction.success(json, params));
         })
         .catch((error) => {
           const onComplete = function onComplete() {
-            dispatch(Handlers.doAction.error(params));
+            dispatch(Handlers.tweetAction.error(params));
           };
 
           if (error && error.response && error.response.json) {

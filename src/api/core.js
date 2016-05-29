@@ -23,13 +23,8 @@ export default {
       }
     });
   },
-  doAction(params) {
-    const type = params.type;
-    if (['retweet', 'discard', 'favorite'].indexOf(type) > -1) {
-      return this.takeActionOnTweet(type, params.userId, params.tweetId, params.cookie);
-    }
-  },
-  takeActionOnTweet(type, userId, tweetId, cookie) {
+  tweetAction(params) {
+    const { type, userId, tweetId, cookie } = params;
     return fetch(`http://api.tweetify.io/user/${userId}/tweet_action/${type}/${tweetId}`, {
       'method': 'POST',
       'credentials': 'include',

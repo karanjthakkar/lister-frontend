@@ -71,6 +71,105 @@ export default function(state = initialState, action) {
       }));
       break;
 
+    case 'TWEET_ACTION_INIT':
+      if (action.params.type === 'favorite') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'favorited': true,
+              'favorite_count': tweet.get('favorite_count') + 1
+            });
+          }
+          return tweet;
+        });
+      } else if (action.params.type === 'unfavorite') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'favorited': false,
+              'favorite_count': tweet.get('favorite_count') - 1
+            });
+          }
+          return tweet;
+        });
+      } else if (action.params.type === 'retweet') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'retweeted': true,
+              'retweet_count': tweet.get('retweet_count') + 1
+            });
+          }
+          return tweet;
+        });
+      } else if (action.params.type === 'unretweet') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'retweeted': false,
+              'retweet_count': tweet.get('retweet_count') - 1
+            });
+          }
+          return tweet;
+        });
+      }
+
+      return state.mergeIn(['data', action.params.listId], fromJS({
+        'records': newRecords
+      }));
+      break;
+
+    case 'TWEET_ACTION_SUCCESS':
+      break;
+
+    case 'TWEET_ACTION_ERROR':
+      if (action.params.type === 'favorite') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'favorited': false,
+              'favorite_count': tweet.get('favorite_count') - 1
+            });
+          }
+          return tweet;
+        });
+      } else if (action.params.type === 'unfavorite') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'favorited': true,
+              'favorite_count': tweet.get('favorite_count') + 1
+            });
+          }
+          return tweet;
+        });
+      } else if (action.params.type === 'retweet') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'retweeted': false,
+              'retweet_count': tweet.get('retweet_count') - 1
+            });
+          }
+          return tweet;
+        });
+      } else if (action.params.type === 'unretweet') {
+        newRecords = state.getIn(['data', action.params.listId, 'records']).map((tweet) => {
+          if (tweet.get('tweet_id') === action.params.tweetId) {
+            return tweet.merge({
+              'retweeted': true,
+              'retweet_count': tweet.get('retweet_count') + 1
+            });
+          }
+          return tweet;
+        });
+      }
+
+      return state.mergeIn(['data', action.params.listId], fromJS({
+        'records': newRecords
+      }));
+      break;
+
   }
 
   return state;

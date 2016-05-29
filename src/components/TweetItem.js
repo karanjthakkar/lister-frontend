@@ -22,13 +22,6 @@ import LikeIcon from '../images/like.png';
 import LikeDoneIcon from '../images/like_hover.png';
 
 const TweetItem = React.createClass({
-  getInitialState() {
-    return {
-      'hasRetweeted': false,
-      'hasLiked': false
-    };
-  },
-
   getTweetText(tweet) {
     const text = tweet.get('tweet_text');
     const urlEntities = tweet.get('tweet_url_entities').toJSON();
@@ -38,24 +31,20 @@ const TweetItem = React.createClass({
 
   doRetweetAction() {
     const tweet = this.props.tweet;
-    this.setState({
-      'hasRetweeted': !this.state.hasRetweeted
-    }, () => {
-      if (this.state.hasRetweeted) {
-        this.props.userAction('retweet', tweet.get('tweet_id'));
-      }
-    });
+    if (tweet.get('retweeted')) {
+      this.props.userAction('unretweet', tweet.get('tweet_id'));
+    } else {
+      this.props.userAction('retweet', tweet.get('tweet_id'));
+    }
   },
 
   doLikeAction() {
     const tweet = this.props.tweet;
-    this.setState({
-      'hasLiked': !this.state.hasLiked
-    }, () => {
-      if (this.state.hasLiked) {
-        this.props.userAction('favorite', tweet.get('tweet_id'));
-      }
-    });
+    if (tweet.get('favorited')) {
+      this.props.userAction('unfavorite', tweet.get('tweet_id'));
+    } else {
+      this.props.userAction('favorite', tweet.get('tweet_id'));
+    }
   },
 
   openUrl(url) {
@@ -88,10 +77,10 @@ const TweetItem = React.createClass({
 
   render() {
     const tweet = this.props.tweet;
-    const iconRetweet = this.state.hasRetweeted ? retweetDoneIcon : retweetIcon;
-    const iconLike = this.state.hasLiked ? LikeDoneIcon : LikeIcon;
-    const actionRetweet = this.state.hasRetweeted ? styles.retweetDoneAction : styles.retweetAction;
-    const actionLike = this.state.hasLiked ? styles.likeDoneAction : styles.likeAction;
+    const iconRetweet = tweet.get('retweeted') ? retweetDoneIcon : retweetIcon;
+    const iconLike = tweet.get('favorited') ? LikeDoneIcon : LikeIcon;
+    const actionRetweet = tweet.get('retweeted') ? styles.retweetDoneAction : styles.retweetAction;
+    const actionLike = tweet.get('favorited') ? styles.likeDoneAction : styles.likeAction;
     return (
       <View style={styles.tweetItem}>
         {(() => {
