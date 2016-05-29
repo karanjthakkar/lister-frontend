@@ -113,7 +113,7 @@ const App = React.createClass({
     });
     Alert.alert(
       'Error',
-      `Unable to login.`,
+      `Login failed. Please try again.`,
       [
         {text: 'OK'}
       ]

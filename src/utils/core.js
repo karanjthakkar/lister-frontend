@@ -90,3 +90,7 @@ export const autoLink = (text, urlEntities, mediaEntities) => {
   }
   return `<p>${text}</p>`;
 };
+
+export const stripText = (text) => {
+  return text.substring(0, 30) + '...';
+}
