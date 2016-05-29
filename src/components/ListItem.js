@@ -68,7 +68,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: 'solid',
     borderBottomColor: '#E1E8ED',
-    height: 70
+    height: 70,
+    backgroundColor: '#FFFFFF'
   },
   name: {
     fontWeight: '600',

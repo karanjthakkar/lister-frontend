@@ -14,6 +14,10 @@ import { bindActionCreators } from 'redux';
 import actions from '../actions';
 import TweetItem from './TweetItem';
 
+import { clearTweetListCache } from '../utils/core';
+
+const Subscribable = require('Subscribable');
+
 const ds = new ListView.DataSource({
   rowHasChanged(r1, r2) {
     return !Immutable.is(r1, r2);
@@ -23,6 +27,9 @@ const ds = new ListView.DataSource({
 const END_THRESHOLD = 100;
 
 const TweetListView = React.createClass({
+
+  mixins: [Subscribable.Mixin],
+
   getInitialState() {
     return {
       'mediaWidth': Dimensions.get('window').width - 64,
@@ -50,12 +57,26 @@ const TweetListView = React.createClass({
   },
 
   componentDidMount() {
+    this.addListenerOn(this.props.routeEvents, 'reloadTweetListView', this.onTweetListRefresh);
     InteractionManager.runAfterInteractions(() => {
       if (this.isMounted) {
         this.setState({
           renderPlaceholderOnly: false
         });
       }
+    });
+  },
+
+  onTweetListRefresh() {
+    clearTweetListCache(() => {
+      const listId = this.props.data.get('list_id');
+      const { userId, cookie } = this.props;
+      this.props.actions.fetchStatusForList({
+        listId,
+        userId,
+        cookie,
+        'noCache': true
+      });
     });
   },
 
@@ -150,6 +171,7 @@ const TweetListView = React.createClass({
             renderFooter={this.renderNextPageLoading}
             onScroll={this.onScroll}
             scrollEventThrottle={1}
+            enableEmptySections={true}
           />
         </View>
       );
