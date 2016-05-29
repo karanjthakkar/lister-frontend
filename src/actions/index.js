@@ -40,9 +40,10 @@ const Handlers = {
       };
     },
 
-    error(params) {
+    error(res, params) {
       return {
         'type': 'FETCH_STATUS_FOR_LIST_ERROR',
+        'response': res,
         params
       };
     }
@@ -63,9 +64,10 @@ const Handlers = {
       };
     },
 
-    error(params) {
+    error(res, params) {
       return {
         'type': 'FETCH_NEXT_STATUS_FOR_LIST_ERROR',
+        'response': res,
         params
       };
     }
@@ -86,9 +88,10 @@ const Handlers = {
       };
     },
 
-    error(params) {
+    error(res, params) {
       return {
         'type': 'FETCH_USER_LIST_ERROR',
+        'response': res,
         params
       };
     }
@@ -109,9 +112,10 @@ const Handlers = {
       };
     },
 
-    error(params) {
+    error(res, params) {
       return {
         'type': 'TWEET_ACTION_ERROR',
+        'response': res,
         params
       };
     }
@@ -127,8 +131,8 @@ const fetchStatusForList = (params, dispatch, Handlers) => {
       dispatch(Handlers.fetchStatusForList.success(json, params));
     })
     .catch((error) => {
-      const onComplete = function onComplete() {
-        dispatch(Handlers.fetchStatusForList.error(params));
+      const onComplete = function onComplete(res) {
+        dispatch(Handlers.fetchStatusForList.error(res, params));
       };
 
       if (error && error.response && error.response.json) {
@@ -150,7 +154,7 @@ const fetchUserLists = (params, dispatch, Handlers) => {
     })
     .catch((error) => {
       const onComplete = function onComplete(res) {
-        dispatch(Handlers.fetchUserLists.error(params));
+        dispatch(Handlers.fetchUserLists.error(res, params));
       };
 
       if (error && error.response && error.response.json) {
@@ -198,7 +202,7 @@ const Actions = {
         })
         .catch((error) => {
           const onComplete = function onComplete(res) {
-            dispatch(Handlers.fetchNextPage.error(params));
+            dispatch(Handlers.fetchNextPage.error(res, params));
           };
 
           if (error && error.response && error.response.json) {
@@ -237,8 +241,8 @@ const Actions = {
           dispatch(Handlers.tweetAction.success(json, params));
         })
         .catch((error) => {
-          const onComplete = function onComplete() {
-            dispatch(Handlers.tweetAction.error(params));
+          const onComplete = function onComplete(res) {
+            dispatch(Handlers.tweetAction.error(res, params));
           };
 
           if (error && error.response && error.response.json) {

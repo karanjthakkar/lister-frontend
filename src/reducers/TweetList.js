@@ -5,7 +5,7 @@ const initialState = fromJS({
 });
 
 export default function(state = initialState, action) {
-  let records, nextPageId;
+  let records, nextPageId, isLoggedOut;
   switch(action.type) {
     case 'FETCH_STATUS_FOR_LIST_BUILD_SCHEMA':
       const data = {};
@@ -13,6 +13,7 @@ export default function(state = initialState, action) {
         data[item.list_id] = {
           'records': [],
           'nextPageId': null,
+          'isLoggedOut': false,
           'isFetching': true,
           'isFetchingError': false,
           'isNextPageFetching': false,
@@ -41,9 +42,11 @@ export default function(state = initialState, action) {
       }));
 
     case 'FETCH_STATUS_FOR_LIST_ERROR':
+      isLoggedOut = action.response && action.response.code === 1;
       return state.mergeIn(['data', action.params.listId], fromJS({
         'isFetching': false,
-        'isFetchingError': true
+        'isFetchingError': true,
+        isLoggedOut
       }));
 
     case 'FETCH_NEXT_STATUS_FOR_LIST_INIT':
@@ -65,9 +68,11 @@ export default function(state = initialState, action) {
       break;
 
     case 'FETCH_NEXT_STATUS_FOR_LIST_ERROR':
+      isLoggedOut = action.response && action.response.code === 1;
       return state.mergeIn(['data', action.params.listId], fromJS({
         'isNextPageFetching': false,
-        'isNextPageFetchingError': true
+        'isNextPageFetchingError': true,
+        isLoggedOut
       }));
       break;
 
@@ -165,8 +170,10 @@ export default function(state = initialState, action) {
         });
       }
 
+      isLoggedOut = action.response && action.response.code === 1;
       return state.mergeIn(['data', action.params.listId], fromJS({
-        'records': newRecords
+        'records': newRecords,
+        isLoggedOut
       }));
       break;
 

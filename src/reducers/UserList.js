@@ -36,10 +36,12 @@ export default function(state = initialState, action) {
       });
 
     case 'FETCH_USER_LIST_ERROR':
+      const isLoggedOut = action.response && action.response.code === 1;
       return state.merge({
         'isRefreshing': false,
         'isFetching': false,
-        'isFetchingError': true
+        'isFetchingError': true,
+        isLoggedOut
       });
   }
 

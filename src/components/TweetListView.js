@@ -89,6 +89,10 @@ const TweetListView = React.createClass({
     const data = props.TweetList.getIn(['data', listId, 'records']);
     const isLoading = props.TweetList.getIn(['data', listId, 'isFetching']);
     const isNextPageLoading = props.TweetList.getIn(['data', listId, 'isNextPageFetching']);
+    const isLoggedOut = props.TweetList.getIn(['data', listId, 'isLoggedOut']);
+    if (isLoggedOut) {
+      return this.props.doLogout();
+    }
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
       isLoading,

@@ -63,6 +63,10 @@ const UserListView = React.createClass({
     const data = props.UserList.get('records');
     const isLoading = props.UserList.get('isFetching');
     const isRefreshing = props.UserList.get('isRefreshing');
+    const isLoggedOut = props.UserList.get('isLoggedOut');
+    if (isLoggedOut) {
+      return this.props.doLogout();
+    }
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
       'isLoading': isLoading,

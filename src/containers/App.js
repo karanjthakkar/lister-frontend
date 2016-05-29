@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicatorIOS,
-  ActionSheetIOS
+  ActionSheetIOS,
+  Alert
 } from 'react-native';
 import CookieManager from 'react-native-cookies';
 import store from 'react-native-simple-store';
@@ -60,16 +61,29 @@ const App = React.createClass({
       });
   },
 
-  logout() {
-    CookieManager.clearAll((err, res) => {
-      this.setState({
-        'isAuthenticated': false,
-        'isWebView': false,
-        'isLoading': false,
-        'cookie': null,
-        'userId': null
+  doLogout() {
+    clearLocalCache(() => {
+      CookieManager.clearAll((err, res) => {
+        this.setState({
+          'isAuthenticated': false,
+          'isWebView': false,
+          'isLoading': false,
+          'cookie': null,
+          'userId': null
+        });
       });
     });
+  },
+
+  doLogoutWithMessage() {
+    this.doLogout();
+    Alert.alert(
+      'Error',
+      `Your session has expired. Login again.`,
+      [
+        {text: 'OK'}
+      ]
+    );
   },
 
   openWebView() {
@@ -113,6 +127,7 @@ const App = React.createClass({
           navigator={navigator}
           userId={this.state.userId}
           cookie={this.state.cookie}
+          doLogout={this.doLogoutWithMessage}
         />
       );
     } else if (route.name === 'TweetListView') {
@@ -123,6 +138,7 @@ const App = React.createClass({
           data={route.listItem}
           userId={this.state.userId}
           cookie={this.state.cookie}
+          doLogout={this.doLogoutWithMessage}
         />
       );
     }
@@ -219,7 +235,7 @@ const App = React.createClass({
       title: 'Account Settings'
     }, (buttonIndex) => {
       if (buttonIndex === 0) {
-        clearLocalCache(this.logout);
+        this.doLogout();
       }
     });
   },
