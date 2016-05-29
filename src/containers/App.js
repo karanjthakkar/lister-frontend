@@ -10,6 +10,7 @@ import {
   ActionSheetIOS
 } from 'react-native';
 import CookieManager from 'react-native-cookies';
+import store from 'react-native-simple-store';
 
 import TweetListView from '../components/TweetListView';
 import UserListView from '../components/UserListView';
@@ -17,11 +18,11 @@ import LoginScreen from '../components/LoginScreen';
 import Twitterlogin from '../components/Twitterlogin';
 import { clearLocalCache } from '../utils/core';
 
-import store from 'react-native-simple-store';
-
 import backIcon from '../images/left_arrow_blue.png';
 import settingsIcon from '../images/settings.png';
 import refreshIcon from '../images/refresh.png';
+
+const EventEmitter = require('EventEmitter');
 
 const App = React.createClass({
 
@@ -36,6 +37,8 @@ const App = React.createClass({
   },
 
   componentWillMount() {
+    this.eventEmitter = new EventEmitter();
+
     store.get('COOKIE')
       .then((cookie) => {
         store.get('USER_ID')
@@ -116,12 +119,17 @@ const App = React.createClass({
       return (
         <TweetListView
           navigator={navigator}
+          routeEvents={this.eventEmitter}
           data={route.listItem}
           userId={this.state.userId}
           cookie={this.state.cookie}
         />
       );
     }
+  },
+
+  refreshTweetListView() {
+    this.eventEmitter.emit('reloadTweetListView');
   },
 
   renderNavBar() {
@@ -180,6 +188,7 @@ const App = React.createClass({
         } else {
           return (
             <TouchableOpacity
+              onPress={_this.refreshTweetListView}
               style={styles.navButton}
             >
               <Image

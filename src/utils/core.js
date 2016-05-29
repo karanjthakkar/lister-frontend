@@ -32,6 +32,28 @@ export const clearLocalCache = (callback) => {
   });
 };
 
+export const clearUserListCache = (callback) => {
+  AsyncStorage.getAllKeys((err, keys) => {
+    keys = keys.filter((key) => {
+      return key.indexOf('USER_LIST') > -1;
+    });
+    AsyncStorage.multiRemove(keys, () => {
+      callback();
+    });
+  });
+};
+
+export const clearTweetListCache = (callback) => {
+  AsyncStorage.getAllKeys((err, keys) => {
+    keys = keys.filter((key) => {
+      return key.indexOf('TWEET_LIST') > -1;
+    });
+    AsyncStorage.multiRemove(keys, () => {
+      callback();
+    });
+  });
+};
+
 function buildTextForEntity(type, text, replaceText, originalText) {
   let urlMarkup = '';
   if (type === 'url') {

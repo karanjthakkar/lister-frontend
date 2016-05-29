@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import actions from '../actions';
 import ListItem from './ListItem';
+import { clearUserListCache } from '../utils/core';
 
 const ds = new ListView.DataSource({
   rowHasChanged(r1, r2) {
@@ -96,10 +97,12 @@ const UserListView = React.createClass({
   },
 
   onUserListRefresh() {
-    this.props.actions.fetchUserLists({
-      'userId': this.props.userId,
-      'cookie': this.props.cookie,
-      'noCache': true
+    clearUserListCache(() => {
+      this.props.actions.fetchUserLists({
+        'userId': this.props.userId,
+        'cookie': this.props.cookie,
+        'noCache': true
+      });
     });
   },
 
