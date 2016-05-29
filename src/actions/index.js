@@ -118,36 +118,65 @@ const Handlers = {
   }
 };
 
+const fetchStatusForList = (params, dispatch, Handlers) => {
+  return api.fetchStatusForList(params.userId, params.listId, params.cookie)
+    .then(checkStatus)
+    .then(parseJSON)
+    .then((json) => {
+      store.save(`TWEET_LIST_${params.listId}`, json);
+      dispatch(Handlers.fetchStatusForList.success(json, params));
+    })
+    .catch((error) => {
+      const onComplete = function onComplete() {
+        dispatch(Handlers.fetchStatusForList.error(params));
+      };
+
+      if (error && error.response && error.response.json) {
+        error.response.json().then(onComplete);
+      } else {
+        onComplete();
+      }
+    });
+};
+
+const fetchUserLists = (params, dispatch, Handlers) => {
+  return api.fetchUserLists(params.userId, params.cookie)
+    .then(checkStatus)
+    .then(parseJSON)
+    .then((json) => {
+      store.save(`USER_LIST_${params.userId}`, json);
+      dispatch(Handlers.fetchUserLists.success(json, params));
+      dispatch(Handlers.fetchStatusForList.build(json, params));
+    })
+    .catch((error) => {
+      const onComplete = function onComplete(res) {
+        dispatch(Handlers.fetchUserLists.error(params));
+      };
+
+      if (error && error.response && error.response.json) {
+        error.response.json().then(onComplete);
+      } else {
+        onComplete();
+      }
+    });
+};
 
 const Actions = {
   fetchStatusForList(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchStatusForList.init(params));
-      store.get(`TWEET_LIST_${params.listId}`)
-        .then((value) => {
-          if (value) {
-            dispatch(Handlers.fetchStatusForList.success(value, params));
-          } else {
-            return api.fetchStatusForList(params.userId, params.listId, params.cookie)
-              .then(checkStatus)
-              .then(parseJSON)
-              .then((json) => {
-                store.save(`TWEET_LIST_${params.listId}`, json);
-                dispatch(Handlers.fetchStatusForList.success(json, params));
-              })
-              .catch((error) => {
-                const onComplete = function onComplete() {
-                  dispatch(Handlers.fetchStatusForList.error(params));
-                };
-
-                if (error && error.response && error.response.json) {
-                  error.response.json().then(onComplete);
-                } else {
-                  onComplete();
-                }
-              });
-          }
-        });
+      if (params.noCache) {
+        return fetchStatusForList(params, dispatch, Handlers);
+      } else {
+        store.get(`TWEET_LIST_${params.listId}`)
+          .then((value) => {
+            if (value) {
+              dispatch(Handlers.fetchStatusForList.success(value, params));
+            } else {
+              return fetchStatusForList(params, dispatch, Handlers);
+            }
+          });
+      }
     };
   },
   fetchNextPage(params) {
@@ -183,33 +212,19 @@ const Actions = {
   fetchUserLists(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchUserLists.init(params));
-      store.get(`USER_LIST_${params.userId}`)
-        .then((value) => {
-          if (value) {
-            dispatch(Handlers.fetchUserLists.success(value, params));
-            return dispatch(Handlers.fetchStatusForList.build(value, params));
-          } else {
-            return api.fetchUserLists(params.userId, params.cookie)
-              .then(checkStatus)
-              .then(parseJSON)
-              .then((json) => {
-                store.save(`USER_LIST_${params.userId}`, json);
-                dispatch(Handlers.fetchUserLists.success(json, params));
-                dispatch(Handlers.fetchStatusForList.build(json, params));
-              })
-              .catch((error) => {
-                const onComplete = function onComplete(res) {
-                  dispatch(Handlers.fetchUserLists.error(params));
-                };
-
-                if (error && error.response && error.response.json) {
-                  error.response.json().then(onComplete);
-                } else {
-                  onComplete();
-                }
-              });
-          }
-        });
+      if (params.noCache) {
+        return fetchUserLists(params, dispatch, Handlers);
+      } else {
+        store.get(`USER_LIST_${params.userId}`)
+          .then((value) => {
+            if (value) {
+              dispatch(Handlers.fetchUserLists.success(value, params));
+              return dispatch(Handlers.fetchStatusForList.build(value, params));
+            } else {
+              return fetchUserLists(params, dispatch, Handlers);
+            }
+          });
+      }
     };
   },
   doAction(params) {

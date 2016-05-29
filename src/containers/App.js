@@ -206,7 +206,8 @@ const App = React.createClass({
         'Cancel',
       ],
       cancelButtonIndex: 1,
-      destructiveButtonIndex: 0
+      destructiveButtonIndex: 0,
+      title: 'Account Settings'
     }, (buttonIndex) => {
       if (buttonIndex === 0) {
         clearLocalCache(this.logout);

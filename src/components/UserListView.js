@@ -6,7 +6,8 @@ import {
   StyleSheet,
   TouchableHighlight,
   ActivityIndicatorIOS,
-  InteractionManager
+  InteractionManager,
+  RefreshControl
 } from 'react-native';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
@@ -23,12 +24,15 @@ const ds = new ListView.DataSource({
 const UserListView = React.createClass({
   getInitialState() {
     return {
+      'data': ds.cloneWithRows([]),
       'isLoading': true,
+      'isRefreshing': false,
       'renderPlaceholderOnly': true
     };
   },
 
   componentWillMount() {
+    this.isMounted = true;
     this.props.actions.fetchUserLists({
       'userId': this.props.userId,
       'cookie': this.props.cookie
@@ -36,11 +40,17 @@ const UserListView = React.createClass({
     this.setupListData(this.props);
   },
 
+  componentWillUnmount() {
+    this.isMounted = false;
+  },
+
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
-      this.setState({
-        renderPlaceholderOnly: false
-      });
+      if (this.isMounted) {
+        this.setState({
+          renderPlaceholderOnly: false
+        });
+      }
     });
   },
 
@@ -51,9 +61,11 @@ const UserListView = React.createClass({
   setupListData(props) {
     const data = props.UserList.get('records');
     const isLoading = props.UserList.get('isFetching');
+    const isRefreshing = props.UserList.get('isRefreshing');
     this.setState({
       'data': ds.cloneWithRows(data.toArray()),
-      'isLoading': isLoading
+      'isLoading': isLoading,
+      'isRefreshing': isRefreshing
     });
   },
 
@@ -64,12 +76,31 @@ const UserListView = React.createClass({
     });
   },
 
+  renderRefreshControl() {
+    return (
+      <RefreshControl
+        style={styles.refreshControl}
+        refreshing={this.state.isRefreshing}
+        onRefresh={this.onUserListRefresh}
+        title="Updating your lists..."
+      />
+    );
+  },
+
   renderListItem(listItem) {
     return (
       <ListItem data={listItem}
         openListView={this.openListView}
       />
     );
+  },
+
+  onUserListRefresh() {
+    this.props.actions.fetchUserLists({
+      'userId': this.props.userId,
+      'cookie': this.props.cookie,
+      'noCache': true
+    });
   },
 
   render() {
@@ -87,7 +118,9 @@ const UserListView = React.createClass({
         <View style={styles.listView}>
           <ListView
             dataSource={this.state.data}
+            refreshControl={this.renderRefreshControl()}
             renderRow={this.renderListItem}
+            enableEmptySections={true}
           />
         </View>
       );
@@ -107,6 +140,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF'
+  },
+  refreshControl: {
+    backgroundColor: '#F5F8FA'
   }
 });
 

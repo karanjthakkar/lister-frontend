@@ -3,6 +3,7 @@ import { fromJS } from 'immutable';
 const initialState = fromJS({
   'records': [],
   'nextPageId': null,
+  'isRefreshing': false,
   'isFetching': true,
   'isFetchingError': false,
   'isNextPageFetching': false,
@@ -12,9 +13,12 @@ const initialState = fromJS({
 export default function(state = initialState, action) {
   switch(action.type) {
     case 'FETCH_USER_LIST_INIT':
+      const isRefreshing = action.params.noCache ? true : false;
+      const isFetching = action.params.noCache ? false : true;
       return state.merge({
-        'isFetching': true,
-        'isFetchingError': false
+        'isFetchingError': false,
+        isFetching,
+        isRefreshing
       });
 
     case 'FETCH_USER_LIST_SUCCESS':
@@ -24,6 +28,7 @@ export default function(state = initialState, action) {
       const records = action.data.data;
       const nextPageId = action.data.next_max_id;
       return state.merge({
+        'isRefreshing': false,
         'isFetching': false,
         'isFetchingError': false,
         'records': records,
@@ -32,6 +37,7 @@ export default function(state = initialState, action) {
 
     case 'FETCH_USER_LIST_ERROR':
       return state.merge({
+        'isRefreshing': false,
         'isFetching': false,
         'isFetchingError': true
       });
