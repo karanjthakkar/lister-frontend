@@ -5,6 +5,7 @@ const initialState = fromJS({
 });
 
 export default function(state = initialState, action) {
+  let records, nextPageId;
   switch(action.type) {
     case 'FETCH_STATUS_FOR_LIST_BUILD_SCHEMA':
       const data = {};
@@ -30,8 +31,8 @@ export default function(state = initialState, action) {
       // Destructuring assignment after variables have already been declared
       // needs the statement to be enclosed in a parentheses:
       // Source: http://stackoverflow.com/a/34836155
-      const records = action.data.data;
-      const nextPageId = action.data.next_max_id;
+      records = action.data.data;
+      nextPageId = action.data.next_max_id;
       return state.mergeIn(['data', action.params.listId], fromJS({
         'isFetching': false,
         'isFetchingError': false,
@@ -44,6 +45,32 @@ export default function(state = initialState, action) {
         'isFetching': false,
         'isFetchingError': true
       }));
+
+    case 'FETCH_NEXT_STATUS_FOR_LIST_INIT':
+      return state.mergeIn(['data', action.params.listId], fromJS({
+        'isNextPageFetching': true,
+        'isNextPageFetchingError': false
+      }));
+      break;
+
+    case 'FETCH_NEXT_STATUS_FOR_LIST_SUCCESS':
+      records = action.data.data;
+      nextPageId = action.data.next_max_id;
+      return state.mergeIn(['data', action.params.listId], fromJS({
+        'isNextPageFetching': false,
+        'isNextPageFetchingError': false,
+        'records': state.getIn(['data', action.params.listId, 'records']).concat(fromJS(records)),
+        nextPageId
+      }));
+      break;
+
+    case 'FETCH_NEXT_STATUS_FOR_LIST_ERROR':
+      return state.mergeIn(['data', action.params.listId], fromJS({
+        'isNextPageFetching': false,
+        'isNextPageFetchingError': true
+      }));
+      break;
+
   }
 
   return state;

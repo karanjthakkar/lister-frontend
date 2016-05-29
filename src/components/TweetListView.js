@@ -20,6 +20,8 @@ const ds = new ListView.DataSource({
   }
 });
 
+const END_THRESHOLD = 100;
+
 const TweetListView = React.createClass({
   getInitialState() {
     return {
@@ -74,10 +76,12 @@ const TweetListView = React.createClass({
   },
 
   userAction(action, tweetId) {
+    const { userId, cookie } = this.props;
     this.props.actions.doAction({
       type: action,
-      userId: '3303637404',
-      tweetId
+      userId: userId,
+      tweetId,
+      cookie
     });
   },
 
@@ -92,7 +96,9 @@ const TweetListView = React.createClass({
   },
 
   renderNextPageLoading() {
-    if(this.state.isNextPageLoading) {
+    const listId = this.props.data.get('list_id');
+    const nextPageId = this.props.TweetList.getIn(['data', listId, 'nextPageId']);
+    if (nextPageId) {
       return (
         <View style={styles.nextPageLoading}>
           <ActivityIndicatorIOS
@@ -104,10 +110,23 @@ const TweetListView = React.createClass({
     }
   },
 
-  fetchNextPage() {
-    this.setState({
-      'isNextPageLoading': true
-    });
+  onScroll() {
+    const contentLength = this.refs.listview.scrollProperties.contentLength;
+    const visibleLength = this.refs.listview.scrollProperties.visibleLength;
+    const offset = this.refs.listview.scrollProperties.offset;
+    const listId = this.props.data.get('list_id');
+    const nextPageId = this.props.TweetList.getIn(['data', listId, 'nextPageId']);
+    const { userId, cookie } = this.props;
+    if (contentLength - (visibleLength + offset) < END_THRESHOLD
+        && nextPageId
+        && !this.state.isNextPageLoading) {
+      this.props.actions.fetchNextPage({
+        listId,
+        userId,
+        cookie,
+        nextPageId
+      });
+    }
   },
 
   render() {
@@ -124,11 +143,13 @@ const TweetListView = React.createClass({
       return (
         <View style={styles.listView}>
           <ListView
+            ref="listview"
             dataSource={this.state.data}
             renderRow={this.renderTweetItem}
             initialListSize={5}
             renderFooter={this.renderNextPageLoading}
-            onEndReached={this.fetchNextPage}
+            onScroll={this.onScroll}
+            scrollEventThrottle={1}
           />
         </View>
       );

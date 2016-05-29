@@ -47,6 +47,29 @@ const Handlers = {
       };
     }
   },
+  'fetchNextPage': {
+    init(params) {
+      return {
+        'type': 'FETCH_NEXT_STATUS_FOR_LIST_INIT',
+        params
+      };
+    },
+
+    success(data, params) {
+      return {
+        'type': 'FETCH_NEXT_STATUS_FOR_LIST_SUCCESS',
+        data,
+        params
+      };
+    },
+
+    error(params) {
+      return {
+        'type': 'FETCH_NEXT_STATUS_FOR_LIST_ERROR',
+        params
+      };
+    }
+  },
   'fetchUserLists': {
     init(params) {
       return {
@@ -127,6 +150,36 @@ const Actions = {
         });
     };
   },
+  fetchNextPage(params) {
+    return (dispatch) => {
+      dispatch(Handlers.fetchNextPage.init(params));
+      return api.fetchNextPage(params.userId, params.listId, params.cookie, params.nextPageId)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then((json) => {
+          store.get(`TWEET_LIST_${params.listId}`)
+            .then((oldJson) => {
+              store.save(`TWEET_LIST_${params.listId}`, {
+                'success': json.success,
+                'data': oldJson.data.concat(json.data),
+                'next_max_id': json.next_max_id
+              });
+            });
+          dispatch(Handlers.fetchNextPage.success(json, params));
+        })
+        .catch((error) => {
+          const onComplete = function onComplete(res) {
+            dispatch(Handlers.fetchNextPage.error(params));
+          };
+
+          if (error && error.response && error.response.json) {
+            error.response.json().then(onComplete);
+          } else {
+            onComplete();
+          }
+        });
+    };
+  },
   fetchUserLists(params) {
     return (dispatch) => {
       dispatch(Handlers.fetchUserLists.init(params));
@@ -156,7 +209,7 @@ const Actions = {
                 }
               });
           }
-        })
+        });
     };
   },
   doAction(params) {
