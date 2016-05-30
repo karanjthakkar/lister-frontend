@@ -12,7 +12,8 @@ import {
 import {
   timeAgo,
   autoLink,
-  humanize
+  humanize,
+  autoLinkWithoutMarkup
 } from '../utils/core';
 import HTMLView from 'react-native-htmlview';
 
@@ -22,11 +23,15 @@ import LikeIcon from '../images/like.png';
 import LikeDoneIcon from '../images/like_hover.png';
 
 const TweetItem = React.createClass({
-  getTweetText(tweet) {
+  getTweetText(tweet, withoutMarkup) {
     const text = tweet.get('tweet_text');
     const urlEntities = tweet.get('tweet_url_entities').toJSON();
     const mediaEntities = tweet.get('tweet_media_entities').toJSON();
-    return autoLink(text, urlEntities, mediaEntities);
+    if (withoutMarkup) {
+      return autoLinkWithoutMarkup(text, urlEntities, mediaEntities);
+    } else {
+      return autoLink(text, urlEntities, mediaEntities);
+    }
   },
 
   doRetweetAction() {
@@ -72,6 +77,12 @@ const TweetItem = React.createClass({
   openTweetLink() {
     const username = this.props.tweet.get('original_tweet_author');
     const tweetId = this.props.tweet.get('original_tweet_id');
+    this.openUrl(`https://twitter.com/${username}/status/${tweetId}`);
+  },
+
+  openQuotedTweetLink() {
+    const username = this.props.tweet.getIn(['quoted_status', 'tweet_author']);
+    const tweetId = this.props.tweet.getIn(['quoted_status', 'tweet_id']);
     this.openUrl(`https://twitter.com/${username}/status/${tweetId}`);
   },
 
@@ -143,7 +154,7 @@ const TweetItem = React.createClass({
                 <Text style={styles.time}>{timeAgo(tweet.get('tweet_posted_at'), this.props.listMountTime)}</Text>
               </TouchableHighlight>
             </View>
-            <Text>
+            <Text style={styles.tweetText}>
               <HTMLView
                 value={this.getTweetText(tweet)}
                 stylesheet={styles}
@@ -152,8 +163,7 @@ const TweetItem = React.createClass({
             </Text>
             {(() => {
               const firstMediaEntity = tweet.get('tweet_media_entities').first();
-              if (tweet.get('tweet_media_entities').count() > 0
-                  && firstMediaEntity.get('type') === 'photo') {
+              if (firstMediaEntity && firstMediaEntity.get('type') === 'photo') {
                 const width = this.props.mediaWidth;
                 const height = width * firstMediaEntity.get('aspectRatio');
                 return (
@@ -167,6 +177,11 @@ const TweetItem = React.createClass({
                     />
                   </View>
                 );
+              }
+            })()}
+            {(() => {
+              if (tweet.get('is_quote_status')) {
+                return this.renderQuotedStatus();
               }
             })()}
             <View style={styles.actions}>
@@ -205,10 +220,59 @@ const TweetItem = React.createClass({
         </View>
       </View>
     );
+  },
+
+  renderQuotedStatus() {
+    const tweet = this.props.tweet.get('quoted_status');
+    return (
+      <TouchableHighlight
+        activeOpacity={1}
+        underlayColor={'#f5f8fa'}
+        onPress={this.openQuotedTweetLink}
+      >
+        <View style={styles.quotedContainer}>
+          <View style={styles.upperSection}>
+            <Text style={styles.author}>{tweet.get('tweet_author_name')}</Text>
+            <Text style={styles.username}>@{tweet.get('tweet_author')}</Text>
+          </View>
+          {(() => {
+            const firstMediaEntity = tweet.get('tweet_media_entities').first();
+            if (firstMediaEntity && firstMediaEntity.get('type') === 'photo') {
+              return (
+                <View style={styles.quotedTweetContainer}>
+                  <View style={styles.quotedImageContainer}>
+                    <Image
+                      style={{
+                        width: 100,
+                        height: 70,
+                        resizeMode: 'cover'
+                      }}
+                      source={{uri: firstMediaEntity.get('media_url')}}
+                    />
+                  </View>
+                  <Text style={styles.quotedText}>{this.getTweetText(tweet, true)}</Text>
+                </View>
+              );
+            } else {
+              return (
+                <Text style={styles.quotedText}>{this.getTweetText(tweet, true)}</Text>
+              );
+            }
+          })()}
+        </View>
+      </TouchableHighlight>
+    );
   }
 });
 
 const styles = StyleSheet.create({
+  quotedContainer: {
+    borderWidth: 1,
+    borderColor: '#E1E8ED',
+    borderRadius: 5,
+    overflow: 'hidden',
+    padding: 10
+  },
   tweetItem: {
     padding: 10,
     flexDirection: 'column',
@@ -328,12 +392,31 @@ const styles = StyleSheet.create({
   imageContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
     borderRadius: 5,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'rgba(0,0,0,.1)',
     overflow: 'hidden'
+  },
+  quotedImageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'rgba(0,0,0,.1)',
+    overflow: 'hidden',
+    marginRight: 10
+  },
+  quotedTweetContainer: {
+    flexDirection: 'row'
+  },
+  quotedText: {
+    flex: 1,
+    fontSize: 13
+  },
+  tweetText: {
+    marginBottom: 10
   }
 });
 

@@ -70,17 +70,30 @@ export const clearTweetListCache = (callback) => {
   });
 };
 
-function buildTextForEntity(type, text, replaceText, originalText) {
+function buildTextForEntity(type, text, replaceText, originalText, withoutMarkup) {
   let urlMarkup = '';
   if (type === 'url') {
-    urlMarkup = `<a href="${originalText}" rel="nofollow">${replaceText}</a>`;
+    if (withoutMarkup) {
+      urlMarkup = replaceText;
+    } else {
+      urlMarkup = `<a href="${originalText}" rel="nofollow">${replaceText}</a>`;
+    }
     return text.replace(originalText, urlMarkup);
   } else if (type === 'hashtag') {
-    urlMarkup = `<a href="https://twitter.com/#!/search?q=%23${replaceText}" rel="nofollow">#${replaceText}</a>`;
-    return text.replace(`#${replaceText}`, urlMarkup);
+    if (withoutMarkup) {
+      return text;
+    } else {
+      urlMarkup = `<a href="https://twitter.com/#!/search?q=%23${replaceText}" rel="nofollow">#${replaceText}</a>`;
+      return text.replace(`#${replaceText}`, urlMarkup);
+    }
   } else if (type === 'screenName') {
-    urlMarkup = `<a href="https://twitter.com/${replaceText}" rel="nofollow">@${replaceText}</a>`;
-    return text.replace(`@${replaceText}`, urlMarkup);
+    if (withoutMarkup) {
+      return text;
+    } else {
+      urlMarkup = `<a href="https://twitter.com/${replaceText}" rel="nofollow">@${replaceText}</a>`;
+      return text.replace(`@${replaceText}`, urlMarkup);
+    }
+
   }
   return text;
 }
@@ -105,6 +118,28 @@ export const autoLink = (text, urlEntities, mediaEntities) => {
     }
   }
   return `<p>${text}</p>`;
+};
+
+export const autoLinkWithoutMarkup = (text, urlEntities, mediaEntities) => {
+  mediaEntities.forEach((entity) => {
+    if (entity.type === 'photo') {
+      text = text.replace(entity.url, '');
+    }
+  });
+  const actualEntities = twitterText.extractEntitiesWithIndices(text, {
+    extractUrlsWithoutProtocol: false
+  });
+  for (let i = 0; i < actualEntities.length; i++) {
+    const entity = actualEntities[i];
+    if (entity.url) {
+      text = buildTextForEntity('url', text, findEntityForUrl(entity.url, urlEntities), entity.url, true);
+    } else if (entity.hashtag) {
+      text = buildTextForEntity('hashtag', text, entity.hashtag, undefined, true);
+    } else if (entity.screenName) {
+      text = buildTextForEntity('screenName', text, entity.screenName, undefined, true);
+    }
+  }
+  return text;
 };
 
 export const stripText = (text) => {
