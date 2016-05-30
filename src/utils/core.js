@@ -1,4 +1,5 @@
 import { AsyncStorage } from 'react-native';
+import store from 'react-native-simple-store';
 import moment from 'moment';
 import numeral from 'numeral';
 import twitterText from 'twitter-text';
@@ -17,7 +18,7 @@ export const timeAgo = (time, now = moment()) => {
   const diffHours = moment(now).diff(then, 'hours');
   const diffDays = moment(now).diff(then, 'days');
   if (diffSeconds > 0 && diffSeconds < 60) { // 0 seconds to 59 seconds
-    return `${diffMinutes}s`;
+    return `${diffSeconds === 0 ? 1 : diffSeconds}s`;
   } else if (diffMinutes > 0 && diffMinutes < 60) { // 1 minute to 59 minutes
     return `${diffMinutes}m`;
   } else if (diffHours > 0 && diffHours < 24) { // 1 hours to 23 hours
@@ -107,5 +108,41 @@ export const autoLink = (text, urlEntities, mediaEntities) => {
 };
 
 export const stripText = (text) => {
-  return text.substring(0, 30) + '...';
-}
+  return text.substring(0, 30) + '…';
+};
+
+export const updateCacheWithActionForTweet = (params) => {
+  store.get(`TWEET_LIST_${params.listId}`)
+    .then((tweetList) => {
+      tweetList.data = tweetList.data.map((tweet) => {
+        if (params.tweetId === tweet.tweet_id) {
+          let changedKeys = {};
+          if (params.type === 'retweet') {
+            changedKeys = {
+              retweeted: true,
+              retweet_count: tweet.retweet_count + 1
+            };
+          } else if (params.type === 'unretweet') {
+            changedKeys = {
+              retweeted: false,
+              retweet_count: tweet.retweet_count - 1
+            };
+          } else if (params.type === 'favorite') {
+            changedKeys = {
+              favorited: true,
+              favorite_count: tweet.favorite_count + 1
+            };
+          } else if (params.type === 'unfavorite') {
+            changedKeys = {
+              favorited: false,
+              favorite_count: tweet.favorite_count - 1
+            };
+          }
+          return Object.assign(tweet, changedKeys);
+        } else {
+          return tweet;
+        }
+      });
+      store.save(`TWEET_LIST_${params.listId}`, tweetList);
+    });
+};

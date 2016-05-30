@@ -1,6 +1,8 @@
 import api from '../api/core';
 import store from 'react-native-simple-store';
 
+import { updateCacheWithActionForTweet } from '../utils/core';
+
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -238,6 +240,10 @@ const Actions = {
         .then(checkStatus)
         .then(parseJSON)
         .then((json) => {
+
+          // Update cache for that action
+          updateCacheWithActionForTweet(params);
+
           dispatch(Handlers.tweetAction.success(json, params));
         })
         .catch((error) => {

@@ -243,7 +243,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingBottom: 5,
-    flex: 1
+    flex: 1,
+    overflow: 'hidden'
   },
   userInfo: {
     flexDirection: 'row'
