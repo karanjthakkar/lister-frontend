@@ -41,6 +41,7 @@ const TweetListView = React.createClass({
   componentWillMount() {
 
     this.isMounted = true;
+    this.listMountTime = Date.now();
 
     const listId = this.props.data.get('list_id');
     const { userId, cookie } = this.props;
@@ -118,6 +119,7 @@ const TweetListView = React.createClass({
         tweet={tweet}
         mediaWidth={this.state.mediaWidth}
         userAction={this.userAction}
+        listMountTime={this.listMountTime}
       />
     );
   },

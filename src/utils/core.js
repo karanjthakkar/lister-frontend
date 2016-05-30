@@ -10,8 +10,23 @@ export const humanize = (number) => {
   return numeral(number).format('0[.]0a');
 }
 
-export const timeAgo = (time) => {
-  return moment(time, 'ddd MMM DD HH:mm:ss ZZ GGGG').fromNow(true);
+export const timeAgo = (time, now = moment()) => {
+  const then = moment(time, 'ddd MMM DD HH:mm:ss ZZ YYYY');
+  const diffSeconds = moment(now).diff(then, 'seconds');
+  const diffMinutes = moment(now).diff(then, 'minutes');
+  const diffHours = moment(now).diff(then, 'hours');
+  const diffDays = moment(now).diff(then, 'days');
+  if (diffSeconds > 0 && diffSeconds < 60) { // 0 seconds to 59 seconds
+    return `${diffMinutes}s`;
+  } else if (diffMinutes > 0 && diffMinutes < 60) { // 1 minute to 59 minutes
+    return `${diffMinutes}m`;
+  } else if (diffHours > 0 && diffHours < 24) { // 1 hours to 23 hours
+    return `${diffHours}h`;
+  } else if (diffDays > 0 && diffDays < 7) { // 1 day to 7 days
+    return `${diffDays}d`;
+  } else {
+    return then.format('DD/MM/YY');
+  }
 };
 
 function findEntityForUrl(url, urlEntities) {
@@ -60,7 +75,7 @@ function buildTextForEntity(type, text, replaceText, originalText) {
     urlMarkup = `<a href="${originalText}" rel="nofollow">${replaceText}</a>`;
     return text.replace(originalText, urlMarkup);
   } else if (type === 'hashtag') {
-    urlMarkup = `<a href="https://twitter.com/${replaceText}" rel="nofollow">#${replaceText}</a>`;
+    urlMarkup = `<a href="https://twitter.com/#!/search?q=%23${replaceText}" rel="nofollow">#${replaceText}</a>`;
     return text.replace(`#${replaceText}`, urlMarkup);
   } else if (type === 'screenName') {
     urlMarkup = `<a href="https://twitter.com/${replaceText}" rel="nofollow">@${replaceText}</a>`;

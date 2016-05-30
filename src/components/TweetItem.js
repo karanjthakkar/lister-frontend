@@ -140,7 +140,7 @@ const TweetItem = React.createClass({
                 underlayColor={'#f5f8fa'}
                 onPress={this.openTweetLink}
               >
-                <Text style={styles.time}>{timeAgo(tweet.get('tweet_posted_at'))}</Text>
+                <Text style={styles.time}>{timeAgo(tweet.get('tweet_posted_at'), this.props.listMountTime)}</Text>
               </TouchableHighlight>
             </View>
             <Text>
