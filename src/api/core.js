@@ -1,6 +1,6 @@
 export default {
   fetchStatusForList(userId, listId, cookie) {
-    return fetch(`http://api.tweetify.io/user/${userId}/list/${listId}/statuses`, {
+    return fetch(`https://api.tweetify.io/user/${userId}/list/${listId}/statuses`, {
       'credentials': 'include',
       'headers': {
         'cookie': cookie
@@ -8,7 +8,7 @@ export default {
     });
   },
   fetchNextPage(userId, listId, cookie, nextPageId) {
-    return fetch(`http://api.tweetify.io/user/${userId}/list/${listId}/statuses?max_id=${nextPageId}`, {
+    return fetch(`https://api.tweetify.io/user/${userId}/list/${listId}/statuses?max_id=${nextPageId}`, {
       'credentials': 'include',
       'headers': {
         'cookie': cookie
@@ -16,7 +16,7 @@ export default {
     });
   },
   fetchUserLists(userId, cookie) {
-    return fetch(`http://api.tweetify.io/user/${userId}/lists`, {
+    return fetch(`https://api.tweetify.io/user/${userId}/lists`, {
       'credentials': 'include',
       'headers': {
         'cookie': cookie
@@ -25,7 +25,7 @@ export default {
   },
   tweetAction(params) {
     const { type, userId, tweetId, cookie } = params;
-    return fetch(`http://api.tweetify.io/user/${userId}/tweet_action/${type}/${tweetId}`, {
+    return fetch(`https://api.tweetify.io/user/${userId}/tweet_action/${type}/${tweetId}`, {
       'method': 'POST',
       'credentials': 'include',
       'headers': {
