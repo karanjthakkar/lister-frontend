@@ -2,26 +2,29 @@ import React from 'react'
 import {
   Text,
   View,
-  TouchableHighlight,
+  TouchableOpacity,
   StyleSheet,
   Image,
   Dimensions
 } from 'react-native';
 
-import loginImage from '../images/login_bg.jpeg';
+import loginImage from '../images/login_bg.jpg';
+import twitterLogo from '../images/twitterLogo.png';
 
-const width = Dimensions.get('window').height * 1.5;
+const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+const INITIAL_OFFSET = 190;
 
 const LoginScreen = React.createClass({
   getInitialState() {
     return {
-      'offset': 250
+      'offset': INITIAL_OFFSET
     };
   },
 
   componentDidMount() {
     this.isMounted = true;
+    this.reverse = true;
     this.moveTheImageByDelta();
   },
 
@@ -32,8 +35,13 @@ const LoginScreen = React.createClass({
 
   moveTheImageByDelta() {
     if (this.isMounted) {
+      if (this.state.offset > ((0.5 * width) + INITIAL_OFFSET)) {
+        this.reverse = false
+      } else if (this.state.offset < INITIAL_OFFSET) {
+        this.reverse = true;
+      }
       this.setState({
-        'offset': this.state.offset + 0.07
+        'offset': this.state.offset + (this.reverse ? 0.05 : -0.05)
       });
       this.timing = requestAnimationFrame(this.moveTheImageByDelta);
     }
@@ -53,16 +61,25 @@ const LoginScreen = React.createClass({
         }]}>
           <View style={styles.appNameContainer}>
             <Text style={styles.appName}>Tweetify</Text>
+            <Text style={styles.appTagline}>
+              Twitter Lists, made fun
+            </Text>
           </View>
-          <TouchableHighlight
-            activeOpacity={1}
-            underlayColor={'transparent'}
+          <TouchableOpacity
+            activeOpacity={0.8}
             onPress={this.props.openWebView}
           >
             <View style={styles.buttonView}>
-              <Text style={styles.loginText}>Sign in with </Text><Text style={styles.loginTextBold}>Twitter</Text>
+              <Image
+                source={twitterLogo}
+                style={styles.twitterLogo}
+              />
+              <Text style={styles.loginText}>Sign in with Twitter</Text>
             </View>
-          </TouchableHighlight>
+          </TouchableOpacity>
+          <Text style={styles.disclaimer}>
+            We will never post anything without your permission
+          </Text>
         </View>
       </Image>
     );
@@ -71,7 +88,7 @@ const LoginScreen = React.createClass({
 
 const styles = StyleSheet.create({
   loginScreen: {
-    width,
+    width: height * 1.5,
     height,
     flex: 1,
     resizeMode: 'stretch'
@@ -84,33 +101,50 @@ const styles = StyleSheet.create({
   },
   appNameContainer: {
     flex: 1,
-    marginTop: 120
+    marginTop: 90
   },
   appName: {
     color: '#FDFDF8',
     fontWeight: '500',
     fontSize: 48,
+    textAlign: 'center',
+    backgroundColor: 'transparent'
+  },
+  appTagline: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FDFDF8',
+    opacity: 0.9,
+    textAlign: 'center',
     backgroundColor: 'transparent'
   },
   buttonView: {
     flexDirection: 'row',
-    height: 60,
+    height: 50,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#EEEFF0',
-    width: 300,
+    backgroundColor: '#55ACEE',
+    width: 280,
     borderRadius: 5,
-    marginBottom: 70
+    marginBottom: 7
   },
   loginText: {
-    color: '#3F97E6',
-    fontWeight: '400',
-    fontSize: 20
+    color: '#FDFDF8',
+    fontWeight: '500',
+    fontSize: 20,
+    marginLeft: 11
   },
-  loginTextBold: {
-    color: '#3F97E6',
-    fontWeight: '700',
-    fontSize: 20
+  twitterLogo: {
+    width: 40,
+    height: 40,
+    margin: 10,
+    tintColor: '#FDFDF8'
+  },
+  disclaimer: {
+    marginBottom: 33,
+    fontSize: 10,
+    opacity: 0.6,
+    color: '#FDFDF8',
+    backgroundColor: 'transparent'
   }
 });
 
