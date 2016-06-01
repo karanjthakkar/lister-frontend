@@ -13,7 +13,7 @@
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* TweetifyAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* TweetifyAppTests.m */; };
-		0888EE3C1CF38ABF0054C20E /* RNCookieManagerIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 0888EE3B1CF38ABF0054C20E /* RNCookieManagerIOS.m */; };
+		08B3ACB91CFF661300A58EBE /* RNCookieManagerIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 08B3ACB81CFF661300A58EBE /* RNCookieManagerIOS.m */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -115,8 +115,8 @@
 		00E356EE1AD99517003FC87E /* TweetifyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TweetifyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* TweetifyAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TweetifyAppTests.m; sourceTree = "<group>"; };
-		0888EE3A1CF38ABF0054C20E /* RNCookieManagerIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCookieManagerIOS.h; sourceTree = "<group>"; };
-		0888EE3B1CF38ABF0054C20E /* RNCookieManagerIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCookieManagerIOS.m; sourceTree = "<group>"; };
+		08B3ACB71CFF661300A58EBE /* RNCookieManagerIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCookieManagerIOS.h; sourceTree = "<group>"; };
+		08B3ACB81CFF661300A58EBE /* RNCookieManagerIOS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCookieManagerIOS.m; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* TweetifyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TweetifyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -216,11 +216,11 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		0888EE391CF38ABF0054C20E /* RNCookieManagerIOS */ = {
+		08B3ACB61CFF661300A58EBE /* RNCookieManagerIOS */ = {
 			isa = PBXGroup;
 			children = (
-				0888EE3A1CF38ABF0054C20E /* RNCookieManagerIOS.h */,
-				0888EE3B1CF38ABF0054C20E /* RNCookieManagerIOS.m */,
+				08B3ACB71CFF661300A58EBE /* RNCookieManagerIOS.h */,
+				08B3ACB81CFF661300A58EBE /* RNCookieManagerIOS.m */,
 			);
 			path = RNCookieManagerIOS;
 			sourceTree = "<group>";
@@ -299,7 +299,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				0888EE391CF38ABF0054C20E /* RNCookieManagerIOS */,
+				08B3ACB61CFF661300A58EBE /* RNCookieManagerIOS */,
 				13B07FAE1A68108700A75B9A /* TweetifyApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* TweetifyAppTests */,
@@ -559,7 +559,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				0888EE3C1CF38ABF0054C20E /* RNCookieManagerIOS.m in Sources */,
+				08B3ACB91CFF661300A58EBE /* RNCookieManagerIOS.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
