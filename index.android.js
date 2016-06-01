@@ -11,7 +11,7 @@ import {
   View
 } from 'react-native';
 
-class ListerApp extends Component {
+class TweetifyApp extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -48,4 +48,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('ListerApp', () => ListerApp);
+AppRegistry.registerComponent('TweetifyApp', () => TweetifyApp);
