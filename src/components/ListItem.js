@@ -17,8 +17,8 @@ const UserListView = React.createClass({
   render() {
     return (
       <TouchableHighlight
-        activeOpacity={1}
-        underlayColor={'#f5f8fa'}
+        activeOpacity={0.8}
+        underlayColor={'#E1E8ED'}
         onPress={this.openListView}
       >
         <View style={styles.listItem}>
