@@ -41,7 +41,7 @@ const LoginScreen = React.createClass({
         this.reverse = true;
       }
       this.setState({
-        'offset': this.state.offset + (this.reverse ? 0.05 : -0.05)
+        'offset': this.state.offset + (this.reverse ? 0.03 : -0.03)
       });
       this.timing = requestAnimationFrame(this.moveTheImageByDelta);
     }
@@ -62,7 +62,7 @@ const LoginScreen = React.createClass({
           <View style={styles.appNameContainer}>
             <Text style={styles.appName}>Tweetify</Text>
             <Text style={styles.appTagline}>
-              Twitter Lists, made fun
+              twitter lists made fun
             </Text>
           </View>
           <TouchableOpacity
@@ -97,14 +97,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    width: Dimensions.get('window').width
+    width,
+    backgroundColor: 'rgba(11, 9, 7, 0.6)'
   },
   appNameContainer: {
     flex: 1,
     marginTop: 90
   },
   appName: {
-    color: '#FDFDF8',
+    color: '#FFFFFF',
     fontWeight: '500',
     fontSize: 48,
     textAlign: 'center',
@@ -115,6 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FDFDF8',
     opacity: 0.9,
+    fontWeight: '600',
     textAlign: 'center',
     backgroundColor: 'transparent'
   },

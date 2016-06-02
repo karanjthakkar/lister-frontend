@@ -110,8 +110,9 @@ const styles = StyleSheet.create({
   },
   webviewHeader: {
     marginTop: 25,
-    height: 30,
+    height: 40,
     flexDirection: 'row',
+    alignItems: 'center',
     borderColor: '#E0E0E0',
     borderBottomWidth: 1
   },
