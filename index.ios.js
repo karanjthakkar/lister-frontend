@@ -6,7 +6,7 @@ import configStore from './src/stores/store.dev';
 
 const store = configStore();
 
-var ListerApp = React.createClass({
+var TweetifyApp = React.createClass({
   render () {
     return (
       <Provider store={store}>
@@ -16,4 +16,4 @@ var ListerApp = React.createClass({
   }
 });
 
-AppRegistry.registerComponent('ListerApp', () => ListerApp);
+AppRegistry.registerComponent('TweetifyApp', () => TweetifyApp);
