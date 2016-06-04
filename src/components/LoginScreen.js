@@ -8,6 +8,8 @@ import {
   Dimensions
 } from 'react-native';
 
+import * as Animatable from 'react-native-animatable';
+
 // import loginImage from '../images/login_bg.jpg';
 import twitterLogo from '../images/twitterLogo.png';
 import appLogo from '../images/logo.png';
@@ -56,7 +58,7 @@ const LoginScreen = React.createClass({
       //   }]
       // }]}>
         <View style={styles.content}>
-          <View style={styles.appNameContainer}>
+          <Animatable.View animation="bounceInDown" duration={800} style={styles.appNameContainer}>
             <Image
               source={appLogo}
               style={styles.appLogo}
@@ -65,22 +67,24 @@ const LoginScreen = React.createClass({
             <Text style={styles.appTagline}>
               twitter lists made fun
             </Text>
-          </View>
+          </Animatable.View>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={this.props.openWebView}
           >
-            <View style={styles.buttonView}>
+            <Animatable.View animation="fadeIn" delay={800} duration={200} style={styles.buttonView}>
               <Image
                 source={twitterLogo}
                 style={styles.twitterLogo}
               />
               <Text style={styles.loginText}>Sign in with Twitter</Text>
-            </View>
+            </Animatable.View>
           </TouchableOpacity>
-          <Text style={styles.disclaimer}>
-            We will never post anything without your permission
-          </Text>
+          <Animatable.View animation="fadeIn" delay={800} duration={200}>
+            <Text style={styles.disclaimer}>
+              We will never post anything without your permission
+            </Text>
+          </Animatable.View>
         </View>
       // </Image>
     );
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
     color: '#FDFDF8',
     fontWeight: '500',
     fontSize: 20,
-    marginLeft: 11
+    marginLeft: 10
   },
   twitterLogo: {
     width: 40,
@@ -152,8 +156,8 @@ const styles = StyleSheet.create({
   disclaimer: {
     marginBottom: 33,
     fontSize: 10,
-    opacity: 0.6,
     color: '#000',
+    opacity: 0.6,
     backgroundColor: 'transparent'
   }
 });
