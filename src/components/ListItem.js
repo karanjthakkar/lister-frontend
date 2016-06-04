@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image
 } from 'react-native';
+import GoogleAnalytics from 'react-native-google-analytics-bridge';
 
 import lockIcon from '../images/lock.png';
 

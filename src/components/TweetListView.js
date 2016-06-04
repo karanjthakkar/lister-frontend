@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import actions from '../actions';
 import TweetItem from './TweetItem';
+import GoogleAnalytics from 'react-native-google-analytics-bridge';
 
 import { clearTweetListCache } from '../utils/core';
 
@@ -39,6 +40,8 @@ const TweetListView = React.createClass({
   },
 
   componentWillMount() {
+
+    GoogleAnalytics.trackScreenView('List Timeline');
 
     this.isMounted = true;
     this.listMountTime = Date.now();
@@ -102,6 +105,7 @@ const TweetListView = React.createClass({
   },
 
   userAction(action, tweetId) {
+    GoogleAnalytics.trackEvent('List Timeline', action);
     const { userId, cookie } = this.props;
     const listId = this.props.data.get('list_id');
     this.props.actions.tweetAction({
@@ -149,6 +153,7 @@ const TweetListView = React.createClass({
     if (contentLength - (visibleLength + offset) < END_THRESHOLD
         && nextPageId
         && !this.state.isNextPageLoading) {
+      GoogleAnalytics.trackEvent('List Timeline', 'Next Page');
       this.props.actions.fetchNextPage({
         listId,
         userId,

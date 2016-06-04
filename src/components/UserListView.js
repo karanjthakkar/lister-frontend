@@ -12,6 +12,8 @@ import {
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import GoogleAnalytics from 'react-native-google-analytics-bridge';
+
 import actions from '../actions';
 import ListItem from './ListItem';
 import { clearUserListCache } from '../utils/core';
@@ -33,6 +35,9 @@ const UserListView = React.createClass({
   },
 
   componentWillMount() {
+
+    GoogleAnalytics.trackScreenView('User Lists');
+
     this.isMounted = true;
     this.props.actions.fetchUserLists({
       'userId': this.props.userId,
@@ -75,6 +80,7 @@ const UserListView = React.createClass({
   },
 
   openListView(listItem) {
+    GoogleAnalytics.trackEvent('Click', 'Show List Timeline');
     this.props.navigator.push({
       'name': 'TweetListView',
       listItem

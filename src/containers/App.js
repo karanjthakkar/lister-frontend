@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import CookieManager from 'react-native-cookies';
 import store from 'react-native-simple-store';
+import GoogleAnalytics from 'react-native-google-analytics-bridge';
 
 import TweetListView from '../components/TweetListView';
 import UserListView from '../components/UserListView';
@@ -45,6 +46,10 @@ const App = React.createClass({
         store.get('USER_ID')
           .then((userId) => {
             if (cookie && userId) {
+
+              // Track userid
+              GoogleAnalytics.setUser(userId);
+
               this.setState({
                 'isAuthenticated': true,
                 'isLoading': false,
@@ -76,6 +81,7 @@ const App = React.createClass({
   },
 
   doLogoutWithMessage() {
+    GoogleAnalytics.trackEvent('Logout', 'Session Expired');
     this.doLogout();
     Alert.alert(
       'Error',
@@ -87,12 +93,15 @@ const App = React.createClass({
   },
 
   openWebView() {
+    GoogleAnalytics.trackScreenView('Login - Webview');
+    GoogleAnalytics.trackEvent('Login', 'Login Start');
     this.setState({
       'isWebView': true
     });
   },
 
   onComplete(userId, cookie) {
+    GoogleAnalytics.trackEvent('Login', 'Login Complete');
     store.save('COOKIE', cookie)
       .then(() => {
         store.save('USER_ID', userId)
@@ -108,6 +117,7 @@ const App = React.createClass({
   },
 
   onFailure() {
+    GoogleAnalytics.trackEvent('Login', 'Login Failed');
     this.setState({
       'isWebView': false
     });
@@ -145,6 +155,7 @@ const App = React.createClass({
   },
 
   refreshTweetListView() {
+    GoogleAnalytics.trackEvent('Click', 'Refresh Timeline');
     this.eventEmitter.emit('reloadTweetListView');
   },
 
@@ -225,6 +236,7 @@ const App = React.createClass({
   },
 
   showSettings() {
+    GoogleAnalytics.trackEvent('Click', 'Settings');
     ActionSheetIOS.showActionSheetWithOptions({
       options: [
         'Logout',
@@ -235,13 +247,18 @@ const App = React.createClass({
       title: 'Account Settings'
     }, (buttonIndex) => {
       if (buttonIndex === 0) {
+        GoogleAnalytics.trackEvent('Logout', 'Manual');
+        GoogleAnalytics.trackEvent('Click', 'Settings - Logout');
         this.doLogout();
+      } else {
+        GoogleAnalytics.trackEvent('Click', 'Settings - Cancel');
       }
     });
   },
 
   render() {
     if (this.state.isLoading) {
+      GoogleAnalytics.trackScreenView('Initalizing');
       return (
         <View style={styles.loading}>
           <ActivityIndicatorIOS
@@ -261,6 +278,7 @@ const App = React.createClass({
           />
         );
       } else {
+        GoogleAnalytics.trackScreenView('Login Page');
         return (
           <LoginScreen openWebView={this.openWebView} />
         );

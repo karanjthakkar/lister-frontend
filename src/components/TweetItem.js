@@ -16,6 +16,7 @@ import {
   autoLinkWithoutMarkup
 } from '../utils/core';
 import HTMLView from 'react-native-htmlview';
+import GoogleAnalytics from 'react-native-google-analytics-bridge';
 
 import retweetIcon from '../images/retweet.png';
 import retweetDoneIcon from '../images/retweet_hover.png';
@@ -53,6 +54,7 @@ const TweetItem = React.createClass({
   },
 
   openUrl(url) {
+    GoogleAnalytics.trackEvent('List Timeline', 'Open Url');
     Linking.openURL(url).catch((err) => {
       Alert.alert(
         'Error',
@@ -65,22 +67,26 @@ const TweetItem = React.createClass({
   },
 
   openProfileLink() {
+    GoogleAnalytics.trackEvent('List Timeline', 'Open Profile');
     const username = this.props.tweet.get('original_tweet_author');
     this.openUrl(`https://twitter.com/${username}`);
   },
 
   openRetweeterProfileLink() {
+    GoogleAnalytics.trackEvent('List Timeline', 'Open Retweeter Profile');
     const username = this.props.tweet.get('tweet_author');
     this.openUrl(`https://twitter.com/${username}`);
   },
 
   openTweetLink() {
+    GoogleAnalytics.trackEvent('List Timeline', 'Open Tweet');
     const username = this.props.tweet.get('original_tweet_author');
     const tweetId = this.props.tweet.get('original_tweet_id');
     this.openUrl(`https://twitter.com/${username}/status/${tweetId}`);
   },
 
   openQuotedTweetLink() {
+    GoogleAnalytics.trackEvent('List Timeline', 'Open Quoted Tweet');
     const username = this.props.tweet.getIn(['quoted_status', 'tweet_author']);
     const tweetId = this.props.tweet.getIn(['quoted_status', 'tweet_id']);
     this.openUrl(`https://twitter.com/${username}/status/${tweetId}`);
