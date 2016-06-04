@@ -8,58 +8,59 @@ import {
   Dimensions
 } from 'react-native';
 
-import loginImage from '../images/login_bg.jpg';
+// import loginImage from '../images/login_bg.jpg';
 import twitterLogo from '../images/twitterLogo.png';
+import appLogo from '../images/logo.png';
 
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-const INITIAL_OFFSET = 190;
+// const width = Dimensions.get('window').width;
+// const height = Dimensions.get('window').height;
+// const INITIAL_OFFSET = 190;
 
 const LoginScreen = React.createClass({
-  getInitialState() {
-    return {
-      'offset': INITIAL_OFFSET
-    };
-  },
+  // getInitialState() {
+  //   return {
+  //     'offset': INITIAL_OFFSET
+  //   };
+  // },
 
   componentDidMount() {
     this.isMounted = true;
-    this.reverse = true;
-    this.moveTheImageByDelta();
+    // this.reverse = true;
+    // this.moveTheImageByDelta();
   },
 
   componentWillUnmount() {
     this.isMounted = false;
-    cancelAnimationFrame(this.timing);
+    // cancelAnimationFrame(this.timing);
   },
 
-  moveTheImageByDelta() {
-    if (this.isMounted) {
-      if (this.state.offset > ((0.5 * width) + INITIAL_OFFSET)) {
-        this.reverse = false
-      } else if (this.state.offset < INITIAL_OFFSET) {
-        this.reverse = true;
-      }
-      this.setState({
-        'offset': this.state.offset + (this.reverse ? 0.03 : -0.03)
-      });
-      this.timing = requestAnimationFrame(this.moveTheImageByDelta);
-    }
-  },
+  // moveTheImageByDelta() {
+  //   if (this.isMounted) {
+  //     if (this.state.offset > ((0.5 * width) + INITIAL_OFFSET)) {
+  //       this.reverse = false
+  //     } else if (this.state.offset < INITIAL_OFFSET) {
+  //       this.reverse = true;
+  //     }
+  //     this.setState({
+  //       'offset': this.state.offset + (this.reverse ? 0.03 : -0.03)
+  //     });
+  //     this.timing = requestAnimationFrame(this.moveTheImageByDelta);
+  //   }
+  // },
 
   render() {
     return (
-      <Image source={loginImage} style={[styles.loginScreen, {
-        transform: [{
-          translateX: -this.state.offset
-        }]
-      }]}>
-        <View style={[styles.content, {
-          transform: [{
-          translateX: this.state.offset
-        }]
-        }]}>
+      // <Image source={loginImage} style={[styles.loginScreen, {
+      //   transform: [{
+      //     translateX: -this.state.offset
+      //   }]
+      // }]}>
+        <View style={styles.content}>
           <View style={styles.appNameContainer}>
+            <Image
+              source={appLogo}
+              style={styles.appLogo}
+            />
             <Text style={styles.appName}>Tweetify</Text>
             <Text style={styles.appTagline}>
               twitter lists made fun
@@ -81,15 +82,15 @@ const LoginScreen = React.createClass({
             We will never post anything without your permission
           </Text>
         </View>
-      </Image>
+      // </Image>
     );
   }
 });
 
 const styles = StyleSheet.create({
   loginScreen: {
-    width: height * 1.5,
-    height,
+    // width: height * 1.5,
+    // height,
     flex: 1,
     resizeMode: 'stretch'
   },
@@ -97,25 +98,32 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    width,
-    backgroundColor: 'rgba(11, 9, 7, 0.6)'
+    // width,
+    // backgroundColor: 'rgba(11, 9, 7, 0.6)'
   },
   appNameContainer: {
     flex: 1,
-    marginTop: 90
+    marginTop: 90,
+    alignItems: 'center'
+  },
+  appLogo: {
+    width: 40,
+    height: 40,
+    borderRadius: 6.5,
+    marginBottom: 10
   },
   appName: {
-    color: '#FFFFFF',
+    color: '#000',
     fontWeight: '500',
-    fontSize: 48,
+    fontSize: 36,
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
   appTagline: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#FDFDF8',
-    opacity: 0.9,
+    marginTop: 5,
+    fontSize: 12,
+    color: '#000',
+    opacity: 0.6,
     fontWeight: '600',
     textAlign: 'center',
     backgroundColor: 'transparent'
@@ -145,7 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 33,
     fontSize: 10,
     opacity: 0.6,
-    color: '#FDFDF8',
+    color: '#000',
     backgroundColor: 'transparent'
   }
 });
