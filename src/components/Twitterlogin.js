@@ -9,6 +9,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import CookieManager from 'react-native-cookies';
+import queryString from 'query-string';
 
 import { stripText } from '../utils/core';
 
@@ -27,17 +28,23 @@ var TwitterLogin = React.createClass({
     this.setState({
       'url': stripText(url)
     });
-    const callbackUrlSegment = 'http://staging.tweetify.io/?code=';
+    const callbackUrlSegment = 'http://staging.tweetify.io/?';
     if (url.indexOf(callbackUrlSegment) > -1) {
-      const userId = url.replace(callbackUrlSegment, '');
-      if (userId !== '0') {
+      const queryParams = url.replace(callbackUrlSegment, '');
+      const userId = queryString.parse(queryParams).userId;
+      const username = queryString.parse(queryParams).username;
+      const error = queryString.parse(queryParams).error;
+      if (error !== '1') {
         CookieManager.get(url, (err, res) => {
           var cookie = '';
           for (var key in res) {
             cookie += key + '=' + res[key] + ';';
           }
           this.refs.webview.stopLoading();
-          this.props.onComplete(userId, cookie);
+          this.props.onComplete({
+            userId,
+            username
+          }, cookie);
         });
       } else {
         this.refs.webview.stopLoading();

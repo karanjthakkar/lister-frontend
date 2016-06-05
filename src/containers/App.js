@@ -34,7 +34,8 @@ const App = React.createClass({
       'isWebView': false,
       'isLoading': true,
       'cookie': null,
-      'userId': null
+      'userId': null,
+      'username': ''
     };
   },
 
@@ -45,23 +46,27 @@ const App = React.createClass({
       .then((cookie) => {
         store.get('USER_ID')
           .then((userId) => {
-            if (cookie && userId) {
+            store.get('USERNAME')
+              .then((username) => {
+                if (cookie && userId && username) {
 
-              // Track userid
-              GoogleAnalytics.setUser(userId);
+                  // Track userid
+                  GoogleAnalytics.setUser(userId);
 
-              this.setState({
-                'isAuthenticated': true,
-                'isLoading': false,
-                'cookie': cookie,
-                'userId': userId
+                  this.setState({
+                    'isAuthenticated': true,
+                    'isLoading': false,
+                    'cookie': cookie,
+                    'userId': userId,
+                    'username': username
+                  });
+                } else {
+                  this.setState({
+                    'isAuthenticated': false,
+                    'isLoading': false
+                  });
+                }
               });
-            } else {
-              this.setState({
-                'isAuthenticated': false,
-                'isLoading': false
-              });
-            }
           });
       });
   },
@@ -74,7 +79,8 @@ const App = React.createClass({
           'isWebView': false,
           'isLoading': false,
           'cookie': null,
-          'userId': null
+          'userId': null,
+          'username': ''
         });
       });
     });
@@ -100,18 +106,23 @@ const App = React.createClass({
     });
   },
 
-  onComplete(userId, cookie) {
+  onComplete(params, cookie) {
+    const { userId, username } = params;
     GoogleAnalytics.trackEvent('Login', 'Login Complete');
     store.save('COOKIE', cookie)
       .then(() => {
         store.save('USER_ID', userId)
           .then(() => {
-            this.setState({
-              'isWebView': false,
-              'isAuthenticated': true,
-              'userId': userId,
-              'cookie': cookie
-            });
+            store.save('USERNAME', username)
+              .then(() => {
+                this.setState({
+                  'isWebView': false,
+                  'isAuthenticated': true,
+                  'userId': userId,
+                  'username': username,
+                  'cookie': cookie
+                });
+              });
           });
       });
   },
@@ -244,7 +255,7 @@ const App = React.createClass({
       ],
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      title: 'Account Settings'
+      title: `Account Settings (@${this.state.username})`
     }, (buttonIndex) => {
       if (buttonIndex === 0) {
         GoogleAnalytics.trackEvent('Logout', 'Manual');
