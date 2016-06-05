@@ -166,7 +166,7 @@ const App = React.createClass({
   },
 
   refreshTweetListView() {
-    GoogleAnalytics.trackEvent('Click', 'Refresh Timeline');
+    GoogleAnalytics.trackEvent('Refresh', 'Refresh Timeline');
     this.eventEmitter.emit('reloadTweetListView');
   },
 

@@ -107,6 +107,9 @@ const UserListView = React.createClass({
   },
 
   onUserListRefresh() {
+
+    GoogleAnalytics.trackEvent('Refresh', 'Refresh User Lists');
+
     clearUserListCache(() => {
       this.props.actions.fetchUserLists({
         'userId': this.props.userId,
