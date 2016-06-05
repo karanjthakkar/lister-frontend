@@ -42,6 +42,15 @@ const UserListView = React.createClass({
                 }
               })()}
             </View>
+            {(() => {
+              if (this.props.data.get('list_description')) {
+                return (
+                  <Text style={styles.description}>
+                    {this.props.data.get('list_description')}
+                  </Text>
+                );
+              }
+            })()}
             <Text style={styles.memberCount}>
               {this.props.data.get('list_member_count')}
               &nbsp;
@@ -69,7 +78,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: 'solid',
     borderBottomColor: '#E1E8ED',
-    height: 70,
     backgroundColor: '#FFFFFF'
   },
   name: {
@@ -81,6 +89,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginRight: 5,
     color: '#8899a6'
+  },
+  description: {
+    fontSize: 11,
+    marginTop: 2,
+    marginBottom: 2
   },
   lockIcon: {
     width: 8,
@@ -109,7 +122,7 @@ const styles = StyleSheet.create({
   },
   rightSection: {
     alignItems: 'center'
-  },
+  }
 });
 
 export default UserListView;
