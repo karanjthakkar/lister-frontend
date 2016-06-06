@@ -11,6 +11,9 @@ import {
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import debounce from 'lodash.debounce';
+import store from 'react-native-simple-store';
+
 import actions from '../actions';
 import TweetItem from './TweetItem';
 import GoogleAnalytics from 'react-native-google-analytics-bridge';
@@ -35,13 +38,18 @@ const TweetListView = React.createClass({
     return {
       'mediaWidth': Dimensions.get('window').width - 64,
       'isLoading': true,
-      'renderPlaceholderOnly': true
+      'renderPlaceholderOnly': true,
+      'isCheckingCache': true
     };
   },
 
   componentWillMount() {
 
     GoogleAnalytics.trackScreenView('List Timeline');
+
+    this.debouncedCacheSave = debounce((position) => {
+      this.saveScrollPosition(position);
+    }, 50);
 
     this.isMounted = true;
     this.listMountTime = Date.now();
@@ -54,10 +62,23 @@ const TweetListView = React.createClass({
       cookie
     });
     this.setupListData(this.props);
+
+    store.get(`SCROLL_POSITION_${listId}`)
+      .then((value) => {
+        this.setState({
+          'scrollPosition': value || 0,
+          'isCheckingCache': false
+        });
+      });
   },
 
   componentWillUnmount() {
     this.isMounted = false;
+  },
+
+  saveScrollPosition(position) {
+    const listId = this.props.data.get('list_id');
+    store.save(`SCROLL_POSITION_${listId}`, position);
   },
 
   componentDidMount() {
@@ -80,6 +101,9 @@ const TweetListView = React.createClass({
         userId,
         cookie,
         'noCache': true
+      });
+      this.setState({
+        'scrollPosition': 0
       });
     });
   },
@@ -150,6 +174,9 @@ const TweetListView = React.createClass({
     const listId = this.props.data.get('list_id');
     const nextPageId = this.props.TweetList.getIn(['data', listId, 'nextPageId']);
     const { userId, cookie } = this.props;
+
+    this.debouncedCacheSave(offset);
+
     if (contentLength - (visibleLength + offset) < END_THRESHOLD
         && nextPageId
         && !this.state.isNextPageLoading) {
@@ -164,7 +191,9 @@ const TweetListView = React.createClass({
   },
 
   render() {
-    if (this.state.isLoading || this.state.renderPlaceholderOnly) {
+    if (this.state.isLoading
+        || this.state.renderPlaceholderOnly
+        || this.state.isCheckingCache) {
       return (
         <View style={styles.loading}>
           <ActivityIndicatorIOS
@@ -185,6 +214,7 @@ const TweetListView = React.createClass({
             onScroll={this.onScroll}
             scrollEventThrottle={1}
             enableEmptySections={true}
+            contentOffset={{x: 0, y: this.state.scrollPosition}}
           />
         </View>
       );

@@ -194,6 +194,7 @@ const Actions = {
         .then((json) => {
           store.get(`TWEET_LIST_${params.listId}`)
             .then((oldJson) => {
+              oldJson = oldJson || [];
               store.save(`TWEET_LIST_${params.listId}`, {
                 'success': json.success,
                 'data': oldJson.data.concat(json.data),
