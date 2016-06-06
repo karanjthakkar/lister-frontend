@@ -59,10 +59,13 @@ export const clearUserListCache = (callback) => {
   });
 };
 
-export const clearTweetListCache = (callback) => {
+export const clearTweetListCache = (listId, callback) => {
   AsyncStorage.getAllKeys((err, keys) => {
     keys = keys.filter((key) => {
-      return key.indexOf('TWEET_LIST') > -1;
+      return (
+        (key.indexOf(`TWEET_LIST_${listId}`) > -1) ||
+        (key.indexOf(`SCROLL_POSITION_${listId}`) > -1)
+      );
     });
     AsyncStorage.multiRemove(keys, () => {
       callback();

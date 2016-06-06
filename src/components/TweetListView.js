@@ -72,7 +72,8 @@ const TweetListView = React.createClass({
   },
 
   onTweetListRefresh() {
-    clearTweetListCache(() => {
+    const listId = this.props.data.get('list_id');
+    clearTweetListCache(listId, () => {
       const listId = this.props.data.get('list_id');
       const { userId, cookie } = this.props;
       this.props.actions.fetchStatusForList({
