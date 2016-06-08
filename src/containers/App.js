@@ -275,6 +275,9 @@ const App = React.createClass({
           'styles': newTheme === 'LIGHT' ? lightStyles : darkStyles
         });
         store.save('THEME', newTheme);
+        this.refs.navigator.replace({
+          name: 'UserListView'
+        });
       } else if (buttonIndex === 1) {
         GoogleAnalytics.trackEvent('Logout', 'Manual');
         GoogleAnalytics.trackEvent('Click', 'Settings - Logout');
@@ -316,6 +319,7 @@ const App = React.createClass({
 
     return (
       <Navigator
+        ref="navigator"
         initialRoute={{
           name: 'UserListView'
         }}
