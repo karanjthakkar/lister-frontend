@@ -583,7 +583,7 @@ const darkStyles = StyleSheet.create({
   quotedText: {
     flex: 1,
     fontSize: 13,
-    color: '#292f33'
+    color: '#C5C9CC'
   },
   tweetText: {
     marginBottom: 10

@@ -88,7 +88,9 @@ const App = React.createClass({
           'isLoading': false,
           'cookie': null,
           'userId': null,
-          'username': ''
+          'username': '',
+          'theme': 'LIGHT',
+          'styles': lightStyles
         });
       });
     });
