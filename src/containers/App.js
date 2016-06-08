@@ -276,6 +276,9 @@ const App = React.createClass({
           'theme': newTheme,
           'styles': newTheme === 'LIGHT' ? lightStyles : darkStyles
         });
+
+        GoogleAnalytics.trackEvent('Theme Change', newTheme);
+
         store.save('THEME', newTheme);
         this.refs.navigator.replace({
           name: 'UserListView'
