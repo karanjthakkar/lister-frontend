@@ -126,6 +126,7 @@ const TweetListView = React.createClass({
         mediaWidth={this.state.mediaWidth}
         userAction={this.userAction}
         listMountTime={this.listMountTime}
+        theme={this.props.theme}
       />
     );
   },
