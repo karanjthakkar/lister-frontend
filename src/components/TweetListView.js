@@ -35,7 +35,8 @@ const TweetListView = React.createClass({
     return {
       'mediaWidth': Dimensions.get('window').width - 64,
       'isLoading': true,
-      'renderPlaceholderOnly': true
+      'renderPlaceholderOnly': true,
+      'styles': this.props.theme === 'LIGHT' ? lightStyles : darkStyles
     };
   },
 
@@ -134,7 +135,7 @@ const TweetListView = React.createClass({
     const nextPageId = this.props.TweetList.getIn(['data', listId, 'nextPageId']);
     if (nextPageId) {
       return (
-        <View style={styles.nextPageLoading}>
+        <View style={this.state.styles.nextPageLoading}>
           <ActivityIndicatorIOS
             animating={true}
             size="small"
@@ -167,7 +168,7 @@ const TweetListView = React.createClass({
   render() {
     if (this.state.isLoading || this.state.renderPlaceholderOnly) {
       return (
-        <View style={styles.loading}>
+        <View style={this.state.styles.loading}>
           <ActivityIndicatorIOS
             animating={true}
             size="small"
@@ -176,7 +177,7 @@ const TweetListView = React.createClass({
       );
     } else {
       return (
-        <View style={styles.listView}>
+        <View style={this.state.styles.listView}>
           <ListView
             ref="listview"
             dataSource={this.state.data}
@@ -193,7 +194,7 @@ const TweetListView = React.createClass({
   },
 });
 
-const styles = StyleSheet.create({
+const lightStyles = StyleSheet.create({
   listView: {
     paddingTop: 64,
     flexDirection: 'row',
@@ -211,6 +212,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF'
+  }
+});
+
+const darkStyles = StyleSheet.create({
+  listView: {
+    paddingTop: 64,
+    flexDirection: 'row',
+    flex: 1,
+    backgroundColor: '#192633'
+  },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#192633'
+  },
+  nextPageLoading: {
+    padding: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#192633'
   }
 });
 

@@ -30,7 +30,8 @@ const UserListView = React.createClass({
       'data': ds.cloneWithRows([]),
       'isLoading': true,
       'isRefreshing': false,
-      'renderPlaceholderOnly': true
+      'renderPlaceholderOnly': true,
+      'styles': this.props.theme === 'LIGHT' ? lightStyles : darkStyles
     };
   },
 
@@ -90,10 +91,11 @@ const UserListView = React.createClass({
   renderRefreshControl() {
     return (
       <RefreshControl
-        style={styles.refreshControl}
+        style={this.state.styles.refreshControl}
         refreshing={this.state.isRefreshing}
         onRefresh={this.onUserListRefresh}
         title="Updating your lists..."
+        titleColor="#8899A6"
       />
     );
   },
@@ -102,6 +104,7 @@ const UserListView = React.createClass({
     return (
       <ListItem data={listItem}
         openListView={this.openListView}
+        theme={this.props.theme}
       />
     );
   },
@@ -122,7 +125,7 @@ const UserListView = React.createClass({
   render() {
     if (this.state.isLoading || this.state.renderPlaceholderOnly) {
       return (
-        <View style={styles.loading}>
+        <View style={this.state.styles.loading}>
           <ActivityIndicatorIOS
             animating={true}
             size="small"
@@ -131,7 +134,7 @@ const UserListView = React.createClass({
       );
     } else {
       return (
-        <View style={styles.listView}>
+        <View style={this.state.styles.listView}>
           <ListView
             dataSource={this.state.data}
             refreshControl={this.renderRefreshControl()}
@@ -144,7 +147,25 @@ const UserListView = React.createClass({
   },
 });
 
-const styles = StyleSheet.create({
+const darkStyles = StyleSheet.create({
+  listView: {
+    paddingTop: 64,
+    flexDirection: 'row',
+    flex: 1,
+    backgroundColor: '#192633'
+  },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#192633'
+  },
+  refreshControl: {
+    backgroundColor: '#24374A'
+  }
+});
+
+const lightStyles = StyleSheet.create({
   listView: {
     paddingTop: 64,
     flexDirection: 'row',
