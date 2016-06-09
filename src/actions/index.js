@@ -258,6 +258,11 @@ const Actions = {
           }
         });
     };
+  },
+  doLogout(params) {
+    return () => {
+      return api.doLogout(params);
+    };
   }
 };
 

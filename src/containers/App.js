@@ -10,6 +10,8 @@ import {
   ActionSheetIOS,
   Alert
 } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import CookieManager from 'react-native-cookies';
 import store from 'react-native-simple-store';
 import GoogleAnalytics from 'react-native-google-analytics-bridge';
@@ -19,6 +21,7 @@ import UserListView from '../components/UserListView';
 import LoginScreen from '../components/LoginScreen';
 import Twitterlogin from '../components/Twitterlogin';
 import { clearLocalCache } from '../utils/core';
+import actions from '../actions';
 
 import backIcon from '../images/left_arrow_blue.png';
 import settingsIcon from '../images/settings.png';
@@ -80,6 +83,9 @@ const App = React.createClass({
   },
 
   doLogout() {
+    this.props.actions.doLogout({
+      cookie: this.state.cookie
+    });
     clearLocalCache(() => {
       CookieManager.clearAll((err, res) => {
         this.setState({
@@ -452,4 +458,14 @@ const darkStyles = StyleSheet.create({
   }
 });
 
-export default App;
+function mapStateToProps(state) {
+  return { };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    'actions': bindActionCreators(actions, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

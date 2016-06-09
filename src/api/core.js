@@ -32,5 +32,15 @@ export default {
         'cookie': cookie
       }
     });
+  },
+  doLogout(params) {
+    const { cookie } = params;
+    return fetch(`https://api.tweetify.io/logout`, {
+      'method': 'POST',
+      'credentials': 'include',
+      'headers': {
+        'cookie': cookie
+      }
+    });
   }
 };

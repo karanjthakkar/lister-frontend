@@ -28,7 +28,7 @@ var TwitterLogin = React.createClass({
     this.setState({
       'url': stripText(url)
     });
-    const callbackUrlSegment = 'http://staging.tweetify.io/?';
+    const callbackUrlSegment = 'https://tweetify.io/?';
     if (url.indexOf(callbackUrlSegment) > -1) {
       const queryParams = url.replace(callbackUrlSegment, '');
       const userId = queryString.parse(queryParams).userId;
