@@ -131,6 +131,10 @@ const App = React.createClass({
           .then(() => {
             store.save('USERNAME', username)
               .then(() => {
+
+                // Track userid
+                GoogleAnalytics.setUser(userId);
+
                 this.setState({
                   'isWebView': false,
                   'isAuthenticated': true,
