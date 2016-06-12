@@ -298,7 +298,7 @@ const lightStyles = StyleSheet.create({
     flexDirection: 'row'
   },
   retweeter: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 5,
     color: '#8899a6'
   },
@@ -327,25 +327,25 @@ const lightStyles = StyleSheet.create({
   },
   author: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 15,
     marginRight: 5
   },
   username: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#8899a6'
   },
   time: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#8899a6'
   },
   p: {
     color: '#292f33',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 18
   },
   a: {
     color: '#007AFF',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 18
   },
   actions: {
@@ -359,31 +359,31 @@ const lightStyles = StyleSheet.create({
   action: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 15
   },
   retweetDoneAction: {
     marginRight: 10,
     color: '#19CF86',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   retweetAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   likeDoneAction: {
     marginRight: 10,
     color: '#E81C4F',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   likeAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   retweetIcon: {
@@ -425,7 +425,7 @@ const lightStyles = StyleSheet.create({
   },
   quotedText: {
     flex: 1,
-    fontSize: 13
+    fontSize: 14
   },
   tweetText: {
     marginBottom: 10
@@ -454,7 +454,7 @@ const darkStyles = StyleSheet.create({
     flexDirection: 'row'
   },
   retweeter: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 5,
     color: '#8899A6'
   },
@@ -483,26 +483,26 @@ const darkStyles = StyleSheet.create({
   },
   author: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 15,
     marginRight: 5,
     color: '#E8EAEB'
   },
   username: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#8899A6'
   },
   time: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#8899A6'
   },
   p: {
     color: '#C5C9CC',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 18
   },
   a: {
     color: '#2AA2EF',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 18
   },
   actions: {
@@ -516,31 +516,31 @@ const darkStyles = StyleSheet.create({
   action: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 15
   },
   retweetDoneAction: {
     marginRight: 10,
     color: '#19CF86',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   retweetAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   likeDoneAction: {
     marginRight: 10,
     color: '#E81C4F',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   likeAction: {
     marginRight: 10,
     color: '#8899a6',
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 17
   },
   retweetIcon: {
@@ -582,7 +582,7 @@ const darkStyles = StyleSheet.create({
   },
   quotedText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 14,
     color: '#C5C9CC'
   },
   tweetText: {

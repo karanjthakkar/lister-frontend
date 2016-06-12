@@ -89,17 +89,17 @@ const darkStyles = StyleSheet.create({
   },
   name: {
     fontWeight: '600',
-    fontSize: 13,
+    fontSize: 14,
     marginRight: 5,
     color: '#E8EAEB'
   },
   author: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 5,
     color: '#8899A6'
   },
   description: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 2,
     marginBottom: 2,
     color: '#8899A6'
@@ -109,14 +109,15 @@ const darkStyles = StyleSheet.create({
     height: 8
   },
   memberCount: {
-    fontSize: 11,
+    fontSize: 12,
     marginRight: 5,
     marginTop: 2,
     color: '#8899A6'
   },
   userInfo: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexWrap: 'wrap'
   },
   authorImage: {
     width: 35,
@@ -147,16 +148,16 @@ const lightStyles = StyleSheet.create({
   },
   name: {
     fontWeight: '600',
-    fontSize: 13,
+    fontSize: 14,
     marginRight: 5
   },
   author: {
-    fontSize: 12,
+    fontSize: 13,
     marginRight: 5,
     color: '#8899a6'
   },
   description: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 2,
     marginBottom: 2
   },
@@ -165,14 +166,15 @@ const lightStyles = StyleSheet.create({
     height: 8
   },
   memberCount: {
-    fontSize: 11,
+    fontSize: 12,
     marginRight: 5,
     marginTop: 2,
     color: '#8899a6'
   },
   userInfo: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexWrap: 'wrap'
   },
   authorImage: {
     width: 35,
