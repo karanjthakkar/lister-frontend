@@ -343,7 +343,7 @@ const App = React.createClass({
           shadowColor: '#2D2727',
           shadowOpacity: 0.5,
           shadowRadius: 6,
-          backgroundColor: '#2D2727',
+          backgroundColor: '#2D2727'
         }}
         renderScene={this.renderScene}
         navigationBar={this.renderNavBar()}
