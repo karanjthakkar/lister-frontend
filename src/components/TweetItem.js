@@ -22,6 +22,7 @@ import retweetIcon from '../images/retweet.png';
 import retweetDoneIcon from '../images/retweet_hover.png';
 import LikeIcon from '../images/like.png';
 import LikeDoneIcon from '../images/like_hover.png';
+import iconReply from '../images/reply.png';
 
 const TweetItem = React.createClass({
   getInitialState() {
@@ -84,6 +85,12 @@ const TweetItem = React.createClass({
     this.openUrl(`https://twitter.com/${username}`);
   },
 
+  openReplyProfileLink() {
+    GoogleAnalytics.trackEvent('List Timeline', 'Open Replier Profile');
+    const username = this.props.tweet.get('in_reply_to_author');
+    this.openUrl(`https://twitter.com/${username}`);
+  },
+
   openTweetLink() {
     GoogleAnalytics.trackEvent('List Timeline', 'Open Tweet');
     const username = this.props.tweet.get('original_tweet_author');
@@ -121,6 +128,24 @@ const TweetItem = React.createClass({
                 >
                   <Text style={this.state.styles.retweeter}>
                     {tweet.get('tweet_author_name')} retweeted
+                  </Text>
+                </TouchableHighlight>
+              </View>
+            );
+          } else if (tweet.get('in_reply_to_author')) {
+            return (
+              <View style={this.state.styles.metaSection}>
+                <Image
+                  style={this.state.styles.smallReplyIcon}
+                  source={iconReply}
+                />
+                <TouchableHighlight
+                  activeOpacity={1}
+                  underlayColor={'transparent'}
+                  onPress={this.openReplyProfileLink}
+                >
+                  <Text style={this.state.styles.replier}>
+                    In reply to {tweet.get('in_reply_to_author_name')}
                   </Text>
                 </TouchableHighlight>
               </View>
@@ -293,11 +318,16 @@ const lightStyles = StyleSheet.create({
     borderBottomColor: '#E1E8ED'
   },
   metaSection: {
-    marginLeft: 20,
+    marginLeft: 26,
     marginBottom: 5,
     flexDirection: 'row'
   },
   retweeter: {
+    fontSize: 13,
+    marginRight: 5,
+    color: '#8899a6'
+  },
+  replier: {
     fontSize: 13,
     marginRight: 5,
     color: '#8899a6'
@@ -396,6 +426,11 @@ const lightStyles = StyleSheet.create({
     width: 14.6,
     marginRight: 3
   },
+  smallReplyIcon: {
+    height: 14,
+    width: 14.6,
+    marginRight: 3
+  },
   likeIcon: {
     height: 20,
     width: 15,
@@ -449,11 +484,16 @@ const darkStyles = StyleSheet.create({
     borderBottomColor: '#303B47'
   },
   metaSection: {
-    marginLeft: 20,
+    marginLeft: 26,
     marginBottom: 5,
     flexDirection: 'row'
   },
   retweeter: {
+    fontSize: 13,
+    marginRight: 5,
+    color: '#8899A6'
+  },
+  replier: {
     fontSize: 13,
     marginRight: 5,
     color: '#8899A6'
@@ -549,6 +589,11 @@ const darkStyles = StyleSheet.create({
     marginRight: 3
   },
   smallRetweetIcon: {
+    height: 14,
+    width: 14.6,
+    marginRight: 3
+  },
+  smallReplyIcon: {
     height: 14,
     width: 14.6,
     marginRight: 3
