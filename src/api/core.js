@@ -15,8 +15,16 @@ export default {
       }
     });
   },
-  fetchUserLists(userId, cookie) {
-    return fetch(`https://api.tweetify.io/user/${userId}/lists`, {
+  fetchUserAllLists(userId, cookie) {
+    return fetch(`https://api.tweetify.io/user/${userId}/lists/all`, {
+      'credentials': 'include',
+      'headers': {
+        'cookie': cookie
+      }
+    });
+  },
+  fetchUserFavoriteLists(userId, cookie) {
+    return fetch(`https://api.tweetify.io/user/${userId}/lists/favorites`, {
       'credentials': 'include',
       'headers': {
         'cookie': cookie

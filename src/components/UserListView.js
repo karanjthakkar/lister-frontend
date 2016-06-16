@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   ActivityIndicatorIOS,
   InteractionManager,
-  RefreshControl
+  RefreshControl,
+  SegmentedControlIOS
 } from 'react-native';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
@@ -16,7 +17,7 @@ import GoogleAnalytics from 'react-native-google-analytics-bridge';
 
 import actions from '../actions';
 import ListItem from './ListItem';
-import { clearUserListCache } from '../utils/core';
+import { clearUserAllListCache, clearUserFavoriteListCache } from '../utils/core';
 
 const ds = new ListView.DataSource({
   rowHasChanged(r1, r2) {
@@ -27,10 +28,15 @@ const ds = new ListView.DataSource({
 const UserListView = React.createClass({
   getInitialState() {
     return {
-      'data': ds.cloneWithRows([]),
-      'isLoading': true,
-      'isRefreshing': false,
+      'allLists': ds.cloneWithRows([]),
+      'favoriteLists': ds.cloneWithRows([]),
+      'isLoadingAllLists': true,
+      'isLoadingFavoriteLists': true,
+      'isRefreshingAllLists': false,
+      'isRefreshingFavoriteLists': false,
       'renderPlaceholderOnly': true,
+      'viewIndex': 0,
+      'viewType': 'AllLists',
       'styles': this.props.theme === 'LIGHT' ? lightStyles : darkStyles
     };
   },
@@ -40,7 +46,11 @@ const UserListView = React.createClass({
     GoogleAnalytics.trackScreenView('User Lists');
 
     this.isMounted = true;
-    this.props.actions.fetchUserLists({
+    this.props.actions.fetchUserAllLists({
+      'userId': this.props.userId,
+      'cookie': this.props.cookie
+    });
+    this.props.actions.fetchUserFavoriteLists({
       'userId': this.props.userId,
       'cookie': this.props.cookie
     });
@@ -66,17 +76,27 @@ const UserListView = React.createClass({
   },
 
   setupListData(props) {
-    const data = props.UserList.get('records');
-    const isLoading = props.UserList.get('isFetching');
-    const isRefreshing = props.UserList.get('isRefreshing');
-    const isLoggedOut = props.UserList.get('isLoggedOut');
+    const allLists = props.UserAllList.get('records');
+    const favoriteLists = props.UserFavoriteList.get('records');
+
+    const isLoadingAllLists = props.UserAllList.get('isFetching');
+    const isLoadingFavoriteLists = props.UserFavoriteList.get('isFetching');
+
+    const isRefreshingAllLists = props.UserAllList.get('isRefreshing');
+    const isRefreshingFavoriteLists = props.UserFavoriteList.get('isRefreshing');
+
+    const isLoggedOut = props.UserAllList.get('isLoggedOut') || props.UserFavoriteList.get('isLoggedOut');
+
     if (isLoggedOut) {
       return this.props.doLogout();
     }
     this.setState({
-      'data': ds.cloneWithRows(data.toArray()),
-      'isLoading': isLoading,
-      'isRefreshing': isRefreshing
+      'allLists': ds.cloneWithRows(allLists.toArray()),
+      'favoriteLists': ds.cloneWithRows(favoriteLists.toArray()),
+      'isLoadingAllLists': isLoadingAllLists,
+      'isLoadingFavoriteLists': isLoadingFavoriteLists,
+      'isRefreshingAllLists': isRefreshingAllLists,
+      'isRefreshingFavoriteLists': isRefreshingFavoriteLists
     });
   },
 
@@ -88,19 +108,31 @@ const UserListView = React.createClass({
     });
   },
 
-  renderRefreshControl() {
+  renderAllListsRefreshControl() {
     return (
       <RefreshControl
         style={this.state.styles.refreshControl}
-        refreshing={this.state.isRefreshing}
-        onRefresh={this.onUserListRefresh}
+        refreshing={this.state.isRefreshingAllLists}
+        onRefresh={this.onUserAllListRefresh}
         title="Updating your lists..."
         titleColor="#8899A6"
       />
     );
   },
 
-  renderListItem(listItem) {
+  renderFavoriteListsRefreshControl() {
+    return (
+      <RefreshControl
+        style={this.state.styles.refreshControl}
+        refreshing={this.state.isRefreshingFavoriteLists}
+        onRefresh={this.onUserFavoriteListRefresh}
+        title="Updating your lists..."
+        titleColor="#8899A6"
+      />
+    );
+  },
+
+  renderFavoriteListItem(listItem) {
     return (
       <ListItem data={listItem}
         openListView={this.openListView}
@@ -109,15 +141,24 @@ const UserListView = React.createClass({
     );
   },
 
-  onUserListRefresh() {
-    GoogleAnalytics.trackEvent('Refresh', 'Refresh User Lists');
+  renderAllListItem(listItem) {
+    return (
+      <ListItem data={listItem}
+        openListView={this.openListView}
+        theme={this.props.theme}
+      />
+    );
+  },
+
+  onUserAllListRefresh() {
+    GoogleAnalytics.trackEvent('Refresh', 'Refresh User All Lists');
 
     this.setState({
       'isRefreshing': true
     });
 
-    clearUserListCache(() => {
-      this.props.actions.fetchUserLists({
+    clearUserAllListCache(() => {
+      this.props.actions.fetchUserAllLists({
         'userId': this.props.userId,
         'cookie': this.props.cookie,
         'noCache': true
@@ -125,8 +166,34 @@ const UserListView = React.createClass({
     });
   },
 
+  onUserFavoriteListRefresh() {
+    GoogleAnalytics.trackEvent('Refresh', 'Refresh User Favorite Lists');
+
+    this.setState({
+      'isRefreshing': true
+    });
+
+    clearUserFavoriteListCache(() => {
+      this.props.actions.fetchUserFavoriteLists({
+        'userId': this.props.userId,
+        'cookie': this.props.cookie,
+        'noCache': true
+      });
+    });
+  },
+
+  changeViewType(event) {
+    const index = event.nativeEvent.selectedSegmentIndex;
+    this.setState({
+      'viewIndex': index,
+      'viewType': index === 0 ? 'AllLists' : 'Favorites'
+    });
+  },
+
   render() {
-    if (this.state.isLoading || this.state.renderPlaceholderOnly) {
+    if (this.state.isLoadingAllLists
+        || this.state.isLoadingFavoriteLists
+        || this.state.renderPlaceholderOnly) {
       return (
         <View style={this.state.styles.loading}>
           <ActivityIndicatorIOS
@@ -138,12 +205,59 @@ const UserListView = React.createClass({
     } else {
       return (
         <View style={this.state.styles.listView}>
-          <ListView
-            dataSource={this.state.data}
-            refreshControl={this.renderRefreshControl()}
-            renderRow={this.renderListItem}
-            enableEmptySections={true}
-          />
+          <View style={this.state.styles.segmentedControlContainer}>
+            <SegmentedControlIOS
+              style={this.state.styles.segmentedControl}
+              values={[
+                'All Lists',
+                'Favorites'
+              ]}
+              tintColor={this.props.theme === 'LIGHT' ? undefined : '#8899A6'}
+              selectedIndex={0}
+              onChange={this.changeViewType}
+            />
+          </View>
+          {(() => {
+            if (this.state.viewType === 'AllLists') {
+              if (this.state.allLists.getRowCount() > 0) {
+                return (
+                  <ListView
+                    dataSource={this.state.allLists}
+                    refreshControl={this.renderAllListsRefreshControl()}
+                    renderRow={this.renderAllListItem}
+                    enableEmptySections={true}
+                  />
+                );
+              } else {
+                return (
+                  <View style={this.state.styles.emptySection}>
+                    <Text style={this.state.styles.emptyText}>
+                      You haven't added favorited any lists. Swipe left on a list to add it here.
+                    </Text>
+                  </View>
+                );
+              }
+            } else {
+              if (this.state.favoriteLists.getRowCount() > 0) {
+                return (
+                  <ListView
+                    dataSource={this.state.favoriteLists}
+                    refreshControl={this.renderFavoriteListsRefreshControl()}
+                    renderRow={this.renderFavoriteListItem}
+                    enableEmptySections={true}
+                  />
+                );
+              } else {
+                return (
+                  <View style={this.state.styles.emptySection}>
+                    <Text style={this.state.styles.emptyText}>
+                      You haven't added favorited any lists. Swipe left on a list to add it here.
+                    </Text>
+                  </View>
+                );
+              }
+            }
+          })()}
         </View>
       );
     }
@@ -151,9 +265,35 @@ const UserListView = React.createClass({
 });
 
 const darkStyles = StyleSheet.create({
+  emptySection: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#192633'
+  },
+  emptyText: {
+    paddingLeft: 40,
+    paddingRight: 40,
+    textAlign: 'center',
+    color: '#E8EAEB'
+  },
+  segmentedControlContainer: {
+    paddingRight: 40,
+    paddingLeft: 40,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#14202b',
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    borderBottomColor: '#303B47'
+  },
+  segmentedControl: {
+    borderRadius: 5
+  },
   listView: {
     paddingTop: 64,
-    flexDirection: 'row',
+    flexDirection: 'column',
     flex: 1,
     backgroundColor: '#192633'
   },
@@ -164,14 +304,37 @@ const darkStyles = StyleSheet.create({
     backgroundColor: '#192633'
   },
   refreshControl: {
-    backgroundColor: '#24374A'
+    backgroundColor: '#192633'
   }
 });
 
 const lightStyles = StyleSheet.create({
+  emptySection: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  emptyText: {
+    paddingLeft: 40,
+    paddingRight: 40,
+    textAlign: 'center'
+  },
+  segmentedControlContainer: {
+    paddingRight: 40,
+    paddingLeft: 40,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#F6F6F6',
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    borderBottomColor: '#E1E8ED'
+  },
+  segmentedControl: {
+  },
   listView: {
     paddingTop: 64,
-    flexDirection: 'row',
+    flexDirection: 'column',
     flex: 1,
     backgroundColor: '#FFFFFF'
   },
@@ -182,13 +345,13 @@ const lightStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF'
   },
   refreshControl: {
-    backgroundColor: '#F5F8FA'
   }
 });
 
 function mapStateToProps(state) {
   return {
-    'UserList': state.UserList
+    'UserAllList': state.UserAllList,
+    'UserFavoriteList': state.UserFavoriteList
   };
 }
 

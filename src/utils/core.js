@@ -48,10 +48,21 @@ export const clearLocalCache = (callback) => {
   });
 };
 
-export const clearUserListCache = (callback) => {
+export const clearUserAllListCache = (callback) => {
   AsyncStorage.getAllKeys((err, keys) => {
     keys = keys.filter((key) => {
       return key.indexOf('USER_LIST') > -1;
+    });
+    AsyncStorage.multiRemove(keys, () => {
+      callback();
+    });
+  });
+};
+
+export const clearUserFavoriteListCache = (callback) => {
+  AsyncStorage.getAllKeys((err, keys) => {
+    keys = keys.filter((key) => {
+      return key.indexOf('USER_FAVORITE_LIST') > -1;
     });
     AsyncStorage.multiRemove(keys, () => {
       callback();

@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux';
 import TweetList from './TweetList';
-import UserList from './UserList';
+import UserAllList from './UserAllList';
+import UserFavoriteList from './UserFavoriteList';
 
 const rootReducer = combineReducers({
   TweetList,
-  UserList
+  UserAllList,
+  UserFavoriteList
 });
 
 export default rootReducer;

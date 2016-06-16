@@ -1,5 +1,5 @@
 {
-  "name": "TweetifyApp",
+  "name": "Tweetify",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -12,7 +12,7 @@
     "numeral": "1.5.3",
     "query-string": "4.2.0",
     "react": "15.0.2",
-    "react-native": "0.26.0",
+    "react-native": "0.26.2",
     "react-native-animatable": "0.6.1",
     "react-native-cookies": "1.0.0",
     "react-native-google-analytics-bridge": "2.1.0",
