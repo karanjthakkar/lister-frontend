@@ -163,6 +163,10 @@ export const stripText = (text) => {
 export const updateCacheWithActionForTweet = (params) => {
   store.get(`TWEET_LIST_${params.listId}`)
     .then((tweetList) => {
+      tweetList = tweetList || {
+        data: [],
+        next_max_id: null
+      };
       tweetList.data = tweetList.data.map((tweet) => {
         if (params.tweetId === tweet.tweet_id) {
           let changedKeys = {};
@@ -193,5 +197,52 @@ export const updateCacheWithActionForTweet = (params) => {
         }
       });
       store.save(`TWEET_LIST_${params.listId}`, tweetList);
+    });
+};
+
+
+export const updateCacheWithActionForList = (params, type) => {
+  store.get(`USER_FAVORITE_LIST_${params.userId}`)
+    .then((favList) => {
+      favList = favList || {
+        data: []
+      };
+      if (type === 'favorite') {
+        favList.data.push(Object.assign(params.list, {
+          is_favorited: true
+        }));
+      } else if (type === 'unfavorite') {
+        favList.data = favList.data.filter((list) => {
+          return list.list_id !== params.list.list_id;
+        });
+      }
+      store.save(`USER_FAVORITE_LIST_${params.userId}`, favList);
+    });
+
+  store.get(`USER_LIST_${params.userId}`)
+    .then((allList) => {
+      allList = allList || {
+        data: []
+      };
+      if (type === 'favorite') {
+        allList.data = allList.data.map((list) => {
+          if (list.list_id === params.list.list_id) {
+            return Object.assign({}, list, {
+              is_favorited: true
+            });
+          }
+          return list;
+        });
+      } else if (type === 'unfavorite') {
+        allList.data = allList.data.map((list) => {
+          if (list.list_id === params.list.list_id) {
+            return Object.assign({}, list, {
+              is_favorited: false
+            });
+          }
+          return list;
+        });
+      }
+      store.save(`USER_LIST_${params.userId}`, allList);
     });
 };

@@ -41,6 +41,26 @@ export default {
       }
     });
   },
+  favoriteList(params) {
+    const { userId, list, cookie } = params;
+    return fetch(`https://api.tweetify.io/user/${userId}/lists/${list.list_id}/favorite`, {
+      'method': 'PUT',
+      'credentials': 'include',
+      'headers': {
+        'cookie': cookie
+      }
+    });
+  },
+  unfavoriteList(params) {
+    const { userId, list, cookie } = params;
+    return fetch(`https://api.tweetify.io/user/${userId}/lists/${list.list_id}/favorite`, {
+      'method': 'DELETE',
+      'credentials': 'include',
+      'headers': {
+        'cookie': cookie
+      }
+    });
+  },
   doLogout(params) {
     const { cookie } = params;
     return fetch(`https://api.tweetify.io/logout`, {

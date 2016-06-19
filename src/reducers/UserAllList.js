@@ -38,6 +38,62 @@ export default function(state = initialState, action) {
         'isFetchingError': true,
         isLoggedOut
       });
+
+    case 'FAVORITE_LIST_INIT':
+      newRecords = state.get('records').map((list) => {
+        if (list.get('list_id') === action.params.list.list_id) {
+          return list.merge({
+            'is_favorited': true
+          });
+        }
+        return list;
+      });
+
+      return state.merge({
+        'records': newRecords
+      });
+
+    case 'FAVORITE_LIST_ERROR':
+      newRecords = state.get('records').map((list) => {
+        if (list.get('list_id') === action.params.list.list_id) {
+          return list.merge({
+            'is_favorited': false
+          });
+        }
+        return list;
+      });
+
+      return state.merge({
+        'records': newRecords
+      });
+
+    case 'UNFAVORITE_LIST_INIT':
+      newRecords = state.get('records').map((list) => {
+        if (list.get('list_id') === action.params.list.list_id) {
+          return list.merge({
+            'is_favorited': false
+          });
+        }
+        return list;
+      });
+
+      return state.merge({
+        'records': newRecords
+      });
+
+    case 'UNFAVORITE_LIST_ERROR':
+      newRecords = state.get('records').map((list) => {
+        if (list.get('list_id') === action.params.list.list_id) {
+          return list.merge({
+            'is_favorited': true
+          });
+        }
+        return list;
+      });
+
+      return state.merge({
+        'records': newRecords
+      });
   }
 
   return state;

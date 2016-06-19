@@ -8,7 +8,8 @@ import {
   Image,
   ActivityIndicatorIOS,
   ActionSheetIOS,
-  Alert
+  Alert,
+  SegmentedControlIOS
 } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -40,6 +41,7 @@ const App = React.createClass({
       'userId': null,
       'username': '',
       'theme': 'LIGHT',
+      'viewType': 'AllLists',
       'styles': lightStyles
     };
   },
@@ -55,27 +57,31 @@ const App = React.createClass({
               .then((username) => {
                 store.get('THEME')
                   .then((theme) => {
-                    if (cookie && userId && username) {
+                    store.get('LIST_VIEW_TYPE')
+                      .then((viewType) => {
+                        if (cookie && userId && username) {
 
-                      // Track userid
-                      GoogleAnalytics.setUser(userId);
+                          // Track userid
+                          GoogleAnalytics.setUser(userId);
 
-                      const cachedTheme = theme || 'LIGHT';
-                      this.setState({
-                        'isAuthenticated': true,
-                        'isLoading': false,
-                        'cookie': cookie,
-                        'userId': userId,
-                        'username': username,
-                        'theme': cachedTheme,
-                        'styles': cachedTheme === 'LIGHT' ? lightStyles : darkStyles
+                          const cachedTheme = theme || 'LIGHT';
+                          this.setState({
+                            'isAuthenticated': true,
+                            'isLoading': false,
+                            'cookie': cookie,
+                            'userId': userId,
+                            'username': username,
+                            'theme': cachedTheme,
+                            'styles': cachedTheme === 'LIGHT' ? lightStyles : darkStyles,
+                            'viewType': viewType || 'AllLists'
+                          });
+                        } else {
+                          this.setState({
+                            'isAuthenticated': false,
+                            'isLoading': false
+                          });
+                        }
                       });
-                    } else {
-                      this.setState({
-                        'isAuthenticated': false,
-                        'isLoading': false
-                      });
-                    }
                   });
               });
           });
@@ -96,7 +102,8 @@ const App = React.createClass({
           'userId': null,
           'username': '',
           'theme': 'LIGHT',
-          'styles': lightStyles
+          'styles': lightStyles,
+          'viewType': 'AllLists'
         });
       });
     });
@@ -170,6 +177,7 @@ const App = React.createClass({
           cookie={this.state.cookie}
           doLogout={this.doLogoutWithMessage}
           theme={this.state.theme}
+          viewType={this.state.viewType}
         />
       );
     } else if (route.name === 'TweetListView') {
@@ -190,6 +198,23 @@ const App = React.createClass({
   refreshTweetListView() {
     GoogleAnalytics.trackEvent('Refresh', 'Refresh Timeline');
     this.eventEmitter.emit('reloadTweetListView');
+  },
+
+  changeViewType(event) {
+    const index = event.nativeEvent.selectedSegmentIndex;
+    const viewType = (index === 0) ? 'AllLists' : 'Favorites';
+
+    GoogleAnalytics.trackEvent('List View Change', viewType);
+
+    store.save('LIST_VIEW_TYPE', viewType);
+
+    this.setState({
+      viewType
+    }, () => {
+      this.refs.navigator.replace({
+        name: 'UserListView'
+      });
+    });
   },
 
   renderNavBar() {
@@ -215,9 +240,18 @@ const App = React.createClass({
       Title(route, navigator, index, navState) {
         if (route.name === 'UserListView') {
           return(
-            <Text style={_this.state.styles.title}>
-              Your Lists
-            </Text>
+            <View style={_this.state.styles.segmentedControlContainer}>
+              <SegmentedControlIOS
+                style={_this.state.styles.segmentedControl}
+                values={[
+                  'All Lists',
+                  'Favorites'
+                ]}
+                tintColor={_this.state.theme === 'LIGHT' ? undefined : '#8899A6'}
+                selectedIndex={_this.state.viewType === 'AllLists' ? 0 : 1}
+                onChange={_this.changeViewType}
+              />
+            </View>
           );
         } else {
           return(
@@ -353,6 +387,15 @@ const App = React.createClass({
 });
 
 const lightStyles = StyleSheet.create({
+  segmentedControlContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  segmentedControl: {
+    width: 200,
+    height: 25
+  },
   navBar: {
     backgroundColor: '#FAFAFA',
     borderColor: '#E0E0E0',
@@ -407,6 +450,15 @@ const lightStyles = StyleSheet.create({
 });
 
 const darkStyles = StyleSheet.create({
+  segmentedControlContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  segmentedControl: {
+    width: 200,
+    height: 25
+  },
   navBar: {
     backgroundColor: '#192633',
     borderColor: '#303B47',

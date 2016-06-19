@@ -10,6 +10,8 @@ import {
 import GoogleAnalytics from 'react-native-google-analytics-bridge';
 
 import lockIcon from '../images/lock.png';
+import favHoverIcon from '../images/fav_hover.png';
+import favIcon from '../images/fav.png';
 
 const UserListView = React.createClass({
   getInitialState() {
@@ -22,6 +24,14 @@ const UserListView = React.createClass({
     this.props.openListView(this.props.data);
   },
 
+  addListToFavorites() {
+    if (this.props.data.get('is_favorited')) {
+      this.props.unfavoriteList(this.props.data.toJSON());
+    } else {
+      this.props.favoriteList(this.props.data.toJSON());
+    }
+  },
+
   render() {
     return (
       <TouchableHighlight
@@ -31,12 +41,21 @@ const UserListView = React.createClass({
       >
         <View style={this.state.styles.listItem}>
           <View style={this.state.styles.leftSection}>
+            <Image
+              style={this.state.styles.authorImage}
+              source={{uri: this.props.data.get('list_owner_profile_image_url')}}
+            />
+          </View>
+          <View style={this.state.styles.middleSection}>
             <View style={this.state.styles.userInfo}>
               <Text style={this.state.styles.name}>
                 {this.props.data.get('list_name')}
               </Text>
               <Text style={this.state.styles.author}>
-                by @{this.props.data.get('list_owner_author')}
+                by
+              </Text>
+              <Text style={this.state.styles.author}>
+                @{this.props.data.get('list_owner_author')}
               </Text>
               {(() => {
                 if (this.props.data.get('is_private')) {
@@ -64,12 +83,39 @@ const UserListView = React.createClass({
               {this.props.data.get('list_member_count') > 1 ? 'members': 'member'}
             </Text>
           </View>
-          <View style={this.state.styles.rightSection}>
-            <Image
-              style={this.state.styles.authorImage}
-              source={{uri: this.props.data.get('list_owner_profile_image_url')}}
-            />
-          </View>
+          {(() => {
+            if (this.props.data.get('is_favorited')) {
+              return (
+                <View style={this.state.styles.rightSection}>
+                  <TouchableHighlight
+                    activeOpacity={0.6}
+                    underlayColor={'transparent'}
+                    onPress={this.addListToFavorites}
+                  >
+                    <Image
+                      style={this.state.styles.favIcon}
+                      source={favHoverIcon}
+                    />
+                  </TouchableHighlight>
+                </View>
+              );
+            } else {
+              return (
+                <View style={this.state.styles.rightSection}>
+                  <TouchableHighlight
+                    activeOpacity={0.6}
+                    underlayColor={'transparent'}
+                    onPress={this.addListToFavorites}
+                  >
+                    <Image
+                      style={this.state.styles.favIcon}
+                      source={favIcon}
+                    />
+                  </TouchableHighlight>
+                </View>
+              );
+            }
+          })()}
         </View>
       </TouchableHighlight>
     );
@@ -119,6 +165,9 @@ const darkStyles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap'
   },
+  leftSection: {
+    marginRight: 10
+  },
   authorImage: {
     width: 35,
     height: 35,
@@ -126,12 +175,16 @@ const darkStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,.1)',
   },
-  leftSection: {
+  favIcon: {
+    width: 25,
+    height: 23.2
+  },
+  middleSection: {
     flexDirection: 'column',
     flex: 1
   },
   rightSection: {
-    alignItems: 'center'
+    marginLeft: 10
   }
 });
 
@@ -176,6 +229,9 @@ const lightStyles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap'
   },
+  leftSection: {
+    marginRight: 10
+  },
   authorImage: {
     width: 35,
     height: 35,
@@ -183,12 +239,16 @@ const lightStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,.1)',
   },
-  leftSection: {
+  favIcon: {
+    width: 25,
+    height: 23.2
+  },
+  middleSection: {
     flexDirection: 'column',
     flex: 1
   },
   rightSection: {
-    alignItems: 'center'
+    marginLeft: 10
   }
 });
 

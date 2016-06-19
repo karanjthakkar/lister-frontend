@@ -35,8 +35,6 @@ const UserListView = React.createClass({
       'isRefreshingAllLists': false,
       'isRefreshingFavoriteLists': false,
       'renderPlaceholderOnly': true,
-      'viewIndex': 0,
-      'viewType': 'AllLists',
       'styles': this.props.theme === 'LIGHT' ? lightStyles : darkStyles
     };
   },
@@ -108,6 +106,22 @@ const UserListView = React.createClass({
     });
   },
 
+  unfavoriteList(list) {
+    this.props.actions.unfavoriteList({
+      list,
+      'userId': this.props.userId,
+      'cookie': this.props.cookie
+    });
+  },
+
+  favoriteList(list) {
+    this.props.actions.favoriteList({
+      list,
+      'userId': this.props.userId,
+      'cookie': this.props.cookie
+    });
+  },
+
   renderAllListsRefreshControl() {
     return (
       <RefreshControl
@@ -137,6 +151,8 @@ const UserListView = React.createClass({
       <ListItem data={listItem}
         openListView={this.openListView}
         theme={this.props.theme}
+        unfavoriteList={this.unfavoriteList}
+        favoriteList={this.favoriteList}
       />
     );
   },
@@ -146,6 +162,8 @@ const UserListView = React.createClass({
       <ListItem data={listItem}
         openListView={this.openListView}
         theme={this.props.theme}
+        unfavoriteList={this.unfavoriteList}
+        favoriteList={this.favoriteList}
       />
     );
   },
@@ -182,14 +200,6 @@ const UserListView = React.createClass({
     });
   },
 
-  changeViewType(event) {
-    const index = event.nativeEvent.selectedSegmentIndex;
-    this.setState({
-      'viewIndex': index,
-      'viewType': index === 0 ? 'AllLists' : 'Favorites'
-    });
-  },
-
   render() {
     if (this.state.isLoadingAllLists
         || this.state.isLoadingFavoriteLists
@@ -205,20 +215,8 @@ const UserListView = React.createClass({
     } else {
       return (
         <View style={this.state.styles.listView}>
-          <View style={this.state.styles.segmentedControlContainer}>
-            <SegmentedControlIOS
-              style={this.state.styles.segmentedControl}
-              values={[
-                'All Lists',
-                'Favorites'
-              ]}
-              tintColor={this.props.theme === 'LIGHT' ? undefined : '#8899A6'}
-              selectedIndex={0}
-              onChange={this.changeViewType}
-            />
-          </View>
           {(() => {
-            if (this.state.viewType === 'AllLists') {
+            if (this.props.viewType === 'AllLists') {
               if (this.state.allLists.getRowCount() > 0) {
                 return (
                   <ListView
@@ -232,7 +230,7 @@ const UserListView = React.createClass({
                 return (
                   <View style={this.state.styles.emptySection}>
                     <Text style={this.state.styles.emptyText}>
-                      You haven't added favorited any lists. Swipe left on a list to add it here.
+                      You don't have any lists :(
                     </Text>
                   </View>
                 );
@@ -251,7 +249,7 @@ const UserListView = React.createClass({
                 return (
                   <View style={this.state.styles.emptySection}>
                     <Text style={this.state.styles.emptyText}>
-                      You haven't added favorited any lists. Swipe left on a list to add it here.
+                      You don't have any favorite lists. Click the heart icon to make it your favorite.
                     </Text>
                   </View>
                 );
@@ -268,8 +266,7 @@ const darkStyles = StyleSheet.create({
   emptySection: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 20,
     backgroundColor: '#192633'
   },
   emptyText: {
@@ -277,19 +274,6 @@ const darkStyles = StyleSheet.create({
     paddingRight: 40,
     textAlign: 'center',
     color: '#E8EAEB'
-  },
-  segmentedControlContainer: {
-    paddingRight: 40,
-    paddingLeft: 40,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: '#14202b',
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
-    borderBottomColor: '#303B47'
-  },
-  segmentedControl: {
-    borderRadius: 5
   },
   listView: {
     paddingTop: 64,
@@ -312,25 +296,12 @@ const lightStyles = StyleSheet.create({
   emptySection: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
+    paddingTop: 20,
   },
   emptyText: {
     paddingLeft: 40,
     paddingRight: 40,
     textAlign: 'center'
-  },
-  segmentedControlContainer: {
-    paddingRight: 40,
-    paddingLeft: 40,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: '#F6F6F6',
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
-    borderBottomColor: '#E1E8ED'
-  },
-  segmentedControl: {
   },
   listView: {
     paddingTop: 64,

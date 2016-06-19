@@ -8,6 +8,7 @@ const initialState = fromJS({
 });
 
 export default function(state = initialState, action) {
+  let isLoggedOut;
   switch(action.type) {
     case 'FETCH_USER_FAVORITE_LIST_INIT':
       const isRefreshing = action.params.noCache ? true : false;
@@ -31,13 +32,46 @@ export default function(state = initialState, action) {
       });
 
     case 'FETCH_USER_FAVORITE_LIST_ERROR':
-      const isLoggedOut = action.response && action.response.code === 1;
+      isLoggedOut = action.response && action.response.code === 1;
       return state.merge({
         'isRefreshing': false,
         'isFetching': false,
         'isFetchingError': true,
         isLoggedOut
       });
+
+    case 'FAVORITE_LIST_INIT':
+      newRecords = state.get('records').push(fromJS(action.params.list));
+      return state.merge({
+        'records': newRecords
+      });
+
+    case 'FAVORITE_LIST_ERROR':
+      isLoggedOut = action.response && action.response.code === 1;
+      newRecords = state.get('records').filter((list) => {
+        if (list.get('list_id') === action.params.list.list_id) {
+          return false;
+        }
+        return true;
+      });
+
+      return state.merge({
+        'records': newRecords,
+        isLoggedOut
+      });
+
+    case 'UNFAVORITE_LIST_INIT':
+      newRecords = state.get('records').filter((list) => {
+        if (list.get('list_id') === action.params.list.list_id) {
+          return false;
+        }
+        return true;
+      });
+
+      return state.merge({
+        'records': newRecords
+      });
+
   }
 
   return state;

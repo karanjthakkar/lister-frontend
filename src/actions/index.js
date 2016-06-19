@@ -1,7 +1,10 @@
 import api from '../api/core';
 import store from 'react-native-simple-store';
 
-import { updateCacheWithActionForTweet } from '../utils/core';
+import {
+  updateCacheWithActionForTweet,
+  updateCacheWithActionForList
+} from '../utils/core';
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -141,6 +144,54 @@ const Handlers = {
     error(res, params) {
       return {
         'type': 'TWEET_ACTION_ERROR',
+        'response': res,
+        params
+      };
+    }
+  },
+  'favoriteList': {
+    init(params) {
+      return {
+        'type': 'FAVORITE_LIST_INIT',
+        params
+      };
+    },
+
+    success(data, params) {
+      return {
+        'type': 'FAVORITE_LIST_SUCCESS',
+        data,
+        params
+      };
+    },
+
+    error(res, params) {
+      return {
+        'type': 'FAVORITE_LIST_ERROR',
+        'response': res,
+        params
+      };
+    }
+  },
+  'unfavoriteList': {
+    init(params) {
+      return {
+        'type': 'UNFAVORITE_LIST_INIT',
+        params
+      };
+    },
+
+    success(data, params) {
+      return {
+        'type': 'UNFAVORITE_LIST_SUCCESS',
+        data,
+        params
+      };
+    },
+
+    error(res, params) {
+      return {
+        'type': 'UNFAVORITE_LIST_ERROR',
         'response': res,
         params
       };
@@ -311,6 +362,58 @@ const Actions = {
         .catch((error) => {
           const onComplete = function onComplete(res) {
             dispatch(Handlers.tweetAction.error(res, params));
+          };
+
+          if (error && error.response && error.response.json) {
+            error.response.json().then(onComplete);
+          } else {
+            onComplete();
+          }
+        });
+    };
+  },
+  favoriteList(params) {
+    return (dispatch) => {
+      dispatch(Handlers.favoriteList.init(params));
+      return api.favoriteList(params)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then((json) => {
+
+          // Update cache for that action
+          updateCacheWithActionForList(params, 'favorite');
+
+          dispatch(Handlers.favoriteList.success(json, params));
+        })
+        .catch((error) => {
+          const onComplete = function onComplete(res) {
+            dispatch(Handlers.favoriteList.error(res, params));
+          };
+
+          if (error && error.response && error.response.json) {
+            error.response.json().then(onComplete);
+          } else {
+            onComplete();
+          }
+        });
+    };
+  },
+  unfavoriteList(params) {
+    return (dispatch) => {
+      dispatch(Handlers.unfavoriteList.init(params));
+      return api.unfavoriteList(params)
+        .then(checkStatus)
+        .then(parseJSON)
+        .then((json) => {
+
+          // Update cache for that action
+          updateCacheWithActionForList(params, 'unfavorite');
+
+          dispatch(Handlers.unfavoriteList.success(json, params));
+        })
+        .catch((error) => {
+          const onComplete = function onComplete(res) {
+            dispatch(Handlers.unfavoriteList.error(res, params));
           };
 
           if (error && error.response && error.response.json) {
