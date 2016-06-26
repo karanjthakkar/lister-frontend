@@ -172,6 +172,7 @@ const App = React.createClass({
     if (route.name === 'UserListView') {
       return (
         <UserListView
+          key={this.state.viewType}
           navigator={navigator}
           userId={this.state.userId}
           cookie={this.state.cookie}

@@ -8,6 +8,7 @@ import {
   Image
 } from 'react-native';
 import GoogleAnalytics from 'react-native-google-analytics-bridge';
+import Swipeout from 'react-native-swipeout';
 
 import lockIcon from '../images/lock.png';
 import favHoverIcon from '../images/fav_hover.png';
@@ -32,7 +33,18 @@ const UserListView = React.createClass({
     }
   },
 
-  render() {
+  renderSwipeActionIcon() {
+    return (
+      <View style={this.state.styles.rightSection}>
+        <Image
+          style={this.state.styles.favIcon}
+          source={this.props.data.get('is_favorited') ? favHoverIcon : favIcon}
+        />
+      </View>
+    );
+  },
+
+  renderItem() {
     return (
       <TouchableHighlight
         activeOpacity={0.8}
@@ -51,22 +63,19 @@ const UserListView = React.createClass({
               <Text style={this.state.styles.name}>
                 {this.props.data.get('list_name')}
               </Text>
-              <Text style={this.state.styles.author}>
-                by
-              </Text>
-              <Text style={this.state.styles.author}>
-                @{this.props.data.get('list_owner_author')}
-              </Text>
-              {(() => {
-                if (this.props.data.get('is_private')) {
-                  return (
-                    <Image
-                      style={this.state.styles.lockIcon}
-                      source={lockIcon}
-                    />
-                  );
-                }
-              })()}
+              <View style={this.state.styles.metaText}>
+                <Text style={this.state.styles.author}>by @{this.props.data.get('list_owner_author')} </Text>
+                {(() => {
+                  if (this.props.data.get('is_private')) {
+                    return (
+                      <Image
+                        style={this.state.styles.lockIcon}
+                        source={lockIcon}
+                      />
+                    );
+                  }
+                })()}
+              </View>
             </View>
             {(() => {
               if (this.props.data.get('list_description')) {
@@ -84,9 +93,9 @@ const UserListView = React.createClass({
             </Text>
           </View>
           {(() => {
-            if (this.props.data.get('is_favorited')) {
+            if (this.props.listType === 'Favorites') {
               return (
-                <View style={this.state.styles.rightSection}>
+                <View style={this.state.styles.favoritedIcon}>
                   <TouchableHighlight
                     activeOpacity={0.6}
                     underlayColor={'transparent'}
@@ -94,22 +103,7 @@ const UserListView = React.createClass({
                   >
                     <Image
                       style={this.state.styles.favIcon}
-                      source={favHoverIcon}
-                    />
-                  </TouchableHighlight>
-                </View>
-              );
-            } else {
-              return (
-                <View style={this.state.styles.rightSection}>
-                  <TouchableHighlight
-                    activeOpacity={0.6}
-                    underlayColor={'transparent'}
-                    onPress={this.addListToFavorites}
-                  >
-                    <Image
-                      style={this.state.styles.favIcon}
-                      source={favIcon}
+                      source={this.props.data.get('is_favorited') ? favHoverIcon : favIcon}
                     />
                   </TouchableHighlight>
                 </View>
@@ -119,18 +113,52 @@ const UserListView = React.createClass({
         </View>
       </TouchableHighlight>
     );
+  },
+
+  render() {
+    const swipeoutBtns = [{
+      'text': 'Unfavorite',
+      'component': this.renderSwipeActionIcon(),
+      'onPress': this.addListToFavorites,
+      'backgroundColor': this.props.theme === 'LIGHT' ? '#F8F8F8' : '#E6E6E6'
+    }];
+    if (this.props.listType === 'AllLists') {
+      return (
+        <View style={this.state.styles.listItemSwipeout}>
+          <Swipeout
+            right={swipeoutBtns}
+            backgroundColor={this.props.theme === 'LIGHT' ? '#F8F8F8' : '#E6E6E6'}
+          >
+            {this.renderItem()}
+          </Swipeout>
+        </View>
+      );
+    } else {
+      return (
+        <View style={this.state.styles.listItemSwipeout}>
+          {this.renderItem()}
+        </View>
+      );
+    }
   }
 });
 
 const darkStyles = StyleSheet.create({
+  listItemSwipeout: {
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    borderBottomColor: '#303B47'
+  },
+  metaText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   listItem: {
     padding: 15,
     paddingTop: 10,
     paddingBottom: 10,
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
-    borderBottomColor: '#303B47',
     backgroundColor: '#192633'
   },
   name: {
@@ -141,7 +169,6 @@ const darkStyles = StyleSheet.create({
   },
   author: {
     fontSize: 13,
-    marginRight: 5,
     color: '#8899A6'
   },
   description: {
@@ -152,7 +179,8 @@ const darkStyles = StyleSheet.create({
   },
   lockIcon: {
     width: 8,
-    height: 8
+    height: 8,
+    tintColor: '#E8EAEB'
   },
   memberCount: {
     fontSize: 12,
@@ -183,20 +211,33 @@ const darkStyles = StyleSheet.create({
     flexDirection: 'column',
     flex: 1
   },
-  rightSection: {
+  favoritedIcon: {
     marginLeft: 10
+  },
+  rightSection: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 
 const lightStyles = StyleSheet.create({
+  listItemSwipeout: {
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    borderBottomColor: '#E1E8ED'
+  },
+  metaText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   listItem: {
     padding: 15,
     paddingTop: 10,
     paddingBottom: 10,
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
-    borderBottomColor: '#E1E8ED',
     backgroundColor: '#FFFFFF'
   },
   name: {
@@ -206,7 +247,6 @@ const lightStyles = StyleSheet.create({
   },
   author: {
     fontSize: 13,
-    marginRight: 5,
     color: '#8899a6'
   },
   description: {
@@ -247,8 +287,14 @@ const lightStyles = StyleSheet.create({
     flexDirection: 'column',
     flex: 1
   },
-  rightSection: {
+  favoritedIcon: {
     marginLeft: 10
+  },
+  rightSection: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 
